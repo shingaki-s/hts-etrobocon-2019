@@ -1,10 +1,10 @@
 /**
  ******************************************************************************
- ** ƒtƒ@ƒCƒ‹–¼ : app.c
+ ** ãƒ•ã‚¡ã‚¤ãƒ«å : app.c
  **
- ** ŠT—v : 2—Ö“|—§Uqƒ‰ƒCƒ“ƒgƒŒ[ƒXƒƒ{ƒbƒg‚ÌTOPPERS/HRP2—pCƒTƒ“ƒvƒ‹ƒvƒƒOƒ‰ƒ€
+ ** æ¦‚è¦ : 2è¼ªå€’ç«‹æŒ¯å­ãƒ©ã‚¤ãƒ³ãƒˆãƒ¬ãƒ¼ã‚¹ãƒ­ãƒœãƒƒãƒˆã®TOPPERS/HRP2ç”¨Cã‚µãƒ³ãƒ—ãƒ«ãƒ—ãƒ­ã‚°ãƒ©ãƒ 
  **
- ** ’‹L : sample_c4 (sample_c3‚ÉBluetooth’ÊMƒŠƒ‚[ƒgƒXƒ^[ƒg‹@”\‚ğ’Ç‰Á)
+ ** æ³¨è¨˜ : sample_c4 (sample_c3ã«Bluetoothé€šä¿¡ãƒªãƒ¢ãƒ¼ãƒˆã‚¹ã‚¿ãƒ¼ãƒˆæ©Ÿèƒ½ã‚’è¿½åŠ )
  ******************************************************************************
  **/
 
@@ -27,7 +27,7 @@
 #endif
 
 /**
- * ƒZƒ“ƒT[Aƒ‚[ƒ^[‚ÌÚ‘±‚ğ’è‹`‚µ‚Ü‚·
+ * ã‚»ãƒ³ã‚µãƒ¼ã€ãƒ¢ãƒ¼ã‚¿ãƒ¼ã®æ¥ç¶šã‚’å®šç¾©ã—ã¾ã™
  */
 static const sensor_port_t
     touch_sensor    = EV3_PORT_1,
@@ -40,54 +40,54 @@ static const motor_port_t
     right_motor     = EV3_PORT_B,
     tail_motor      = EV3_PORT_A;
 
-static int      bt_cmd = 0;     /* BluetoothƒRƒ}ƒ“ƒh 1:ƒŠƒ‚[ƒgƒXƒ^[ƒg */
-static FILE     *bt = NULL;     /* Bluetoothƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹ */
+static int      bt_cmd = 0;     /* Bluetoothã‚³ãƒãƒ³ãƒ‰ 1:ãƒªãƒ¢ãƒ¼ãƒˆã‚¹ã‚¿ãƒ¼ãƒˆ */
+static FILE     *bt = NULL;     /* Bluetoothãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ« */
 
-/* ‰º‹L‚Ìƒ}ƒNƒ‚ÍŒÂ‘Ì/ŠÂ‹«‚É‡‚í‚¹‚Ä•ÏX‚·‚é•K—v‚ª‚ ‚è‚Ü‚· */
-/* sample_c1ƒ}ƒNƒ */
-#define GYRO_OFFSET  0          /* ƒWƒƒƒCƒƒZƒ“ƒTƒIƒtƒZƒbƒg’l(Šp‘¬“x0[deg/sec]) */
-#define LIGHT_WHITE  55         /* ”’F‚ÌŒõƒZƒ“ƒT’l */
-#define LIGHT_BLACK  0          /* •F‚ÌŒõƒZƒ“ƒT’l */
-/* sample_c2ƒ}ƒNƒ */
-#define SONAR_ALERT_DISTANCE 30 /* ’´‰¹”gƒZƒ“ƒT‚É‚æ‚éáŠQ•¨ŒŸ’m‹——£[cm] */
-/* sample_c3ƒ}ƒNƒ */
-#define TAIL_ANGLE_STAND_UP  90 /* Š®‘S’â~‚ÌŠp“x[“x] */
-#define TAIL_ANGLE_DRIVE      3 /* ƒoƒ‰ƒ“ƒX‘–s‚ÌŠp“x[“x] */
-#define P_GAIN             2.5F /* Š®‘S’â~—pƒ‚[ƒ^[§Œä”ä—áŒW” */
-#define PWM_ABS_MAX          60 /* Š®‘S’â~—pƒ‚[ƒ^[§ŒäPWMâ‘ÎÅ‘å’l */
-/* sample_c4ƒ}ƒNƒ */
-//#define DEVICE_NAME     "ET0"  /* Bluetooth–¼ sdcard:\ev3rt\etc\rc.conf.ini LocalName‚Åİ’è */
-//#define PASS_KEY        "1234" /* ƒpƒXƒL[    sdcard:\ev3rt\etc\rc.conf.ini PinCode‚Åİ’è */
-#define CMD_START         '1'    /* ƒŠƒ‚[ƒgƒXƒ^[ƒgƒRƒ}ƒ“ƒh */
+/* ä¸‹è¨˜ã®ãƒã‚¯ãƒ­ã¯å€‹ä½“/ç’°å¢ƒã«åˆã‚ã›ã¦å¤‰æ›´ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ */
+/* sample_c1ãƒã‚¯ãƒ­ */
+#define GYRO_OFFSET  0          /* ã‚¸ãƒ£ã‚¤ãƒ­ã‚»ãƒ³ã‚µã‚ªãƒ•ã‚»ãƒƒãƒˆå€¤(è§’é€Ÿåº¦0[deg/sec]æ™‚) */
+#define LIGHT_WHITE  55         /* ç™½è‰²ã®å…‰ã‚»ãƒ³ã‚µå€¤ */
+#define LIGHT_BLACK  0          /* é»’è‰²ã®å…‰ã‚»ãƒ³ã‚µå€¤ */
+/* sample_c2ãƒã‚¯ãƒ­ */
+#define SONAR_ALERT_DISTANCE 30 /* è¶…éŸ³æ³¢ã‚»ãƒ³ã‚µã«ã‚ˆã‚‹éšœå®³ç‰©æ¤œçŸ¥è·é›¢[cm] */
+/* sample_c3ãƒã‚¯ãƒ­ */
+#define TAIL_ANGLE_STAND_UP  90 /* å®Œå…¨åœæ­¢æ™‚ã®è§’åº¦[åº¦] */
+#define TAIL_ANGLE_DRIVE      3 /* ãƒãƒ©ãƒ³ã‚¹èµ°è¡Œæ™‚ã®è§’åº¦[åº¦] */
+#define P_GAIN             2.5F /* å®Œå…¨åœæ­¢ç”¨ãƒ¢ãƒ¼ã‚¿ãƒ¼åˆ¶å¾¡æ¯”ä¾‹ä¿‚æ•° */
+#define PWM_ABS_MAX          60 /* å®Œå…¨åœæ­¢ç”¨ãƒ¢ãƒ¼ã‚¿ãƒ¼åˆ¶å¾¡PWMçµ¶å¯¾æœ€å¤§å€¤ */
+/* sample_c4ãƒã‚¯ãƒ­ */
+//#define DEVICE_NAME     "ET0"  /* Bluetoothå sdcard:\ev3rt\etc\rc.conf.ini LocalNameã§è¨­å®š */
+//#define PASS_KEY        "1234" /* ãƒ‘ã‚¹ã‚­ãƒ¼    sdcard:\ev3rt\etc\rc.conf.ini PinCodeã§è¨­å®š */
+#define CMD_START         '1'    /* ãƒªãƒ¢ãƒ¼ãƒˆã‚¹ã‚¿ãƒ¼ãƒˆã‚³ãƒãƒ³ãƒ‰ */
 
-/* LCDƒtƒHƒ“ƒgƒTƒCƒY */
+/* LCDãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚º */
 #define CALIB_FONT (EV3_FONT_SMALL)
 #define CALIB_FONT_WIDTH (6/*TODO: magic number*/)
 #define CALIB_FONT_HEIGHT (8/*TODO: magic number*/)
 
-/* ŠÖ”ƒvƒƒgƒ^ƒCƒvéŒ¾ */
+/* é–¢æ•°ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€ */
 static int sonar_alert(void);
 static void tail_control(signed int angle);
 static void backlash_cancel(signed char lpwm, signed char rpwm, int32_t *lenc, int32_t *renc);
 
-/* ƒƒCƒ“ƒ^ƒXƒN */
+/* ãƒ¡ã‚¤ãƒ³ã‚¿ã‚¹ã‚¯ */
 void main_task(intptr_t unused)
 {
-    signed char forward;      /* ‘OŒãi–½—ß */
-    signed char turn;         /* ù‰ñ–½—ß */
-    signed char pwm_L, pwm_R; /* ¶‰Eƒ‚[ƒ^[PWMo—Í */
+    signed char forward;      /* å‰å¾Œé€²å‘½ä»¤ */
+    signed char turn;         /* æ—‹å›å‘½ä»¤ */
+    signed char pwm_L, pwm_R; /* å·¦å³ãƒ¢ãƒ¼ã‚¿ãƒ¼PWMå‡ºåŠ› */
 
-    /* LCD‰æ–Ê•\¦ */
+    /* LCDç”»é¢è¡¨ç¤º */
     ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
     ev3_lcd_draw_string("EV3way-ET sample_c4", 0, CALIB_FONT_HEIGHT*1);
 
-    /* ƒZƒ“ƒT[“ü—Íƒ|[ƒg‚Ìİ’è */
+    /* ã‚»ãƒ³ã‚µãƒ¼å…¥åŠ›ãƒãƒ¼ãƒˆã®è¨­å®š */
     ev3_sensor_config(sonar_sensor, ULTRASONIC_SENSOR);
     ev3_sensor_config(color_sensor, COLOR_SENSOR);
-    ev3_color_sensor_get_reflect(color_sensor); /* ”½Ë—¦ƒ‚[ƒh */
+    ev3_color_sensor_get_reflect(color_sensor); /* åå°„ç‡ãƒ¢ãƒ¼ãƒ‰ */
     ev3_sensor_config(touch_sensor, TOUCH_SENSOR);
     ev3_sensor_config(gyro_sensor, GYRO_SENSOR);
-    /* ƒ‚[ƒ^[o—Íƒ|[ƒg‚Ìİ’è */
+    /* ãƒ¢ãƒ¼ã‚¿ãƒ¼å‡ºåŠ›ãƒãƒ¼ãƒˆã®è¨­å®š */
     ev3_motor_config(left_motor, LARGE_MOTOR);
     ev3_motor_config(right_motor, LARGE_MOTOR);
     ev3_motor_config(tail_motor, LARGE_MOTOR);
@@ -97,38 +97,38 @@ void main_task(intptr_t unused)
     bt = ev3_serial_open_file(EV3_SERIAL_BT);
     assert(bt != NULL);
 
-    /* Bluetooth’ÊMƒ^ƒXƒN‚Ì‹N“® */
+    /* Bluetoothé€šä¿¡ã‚¿ã‚¹ã‚¯ã®èµ·å‹• */
     act_tsk(BT_TASK);
 
-    ev3_led_set_color(LED_ORANGE); /* ‰Šú‰»Š®—¹’Ê’m */
+    ev3_led_set_color(LED_ORANGE); /* åˆæœŸåŒ–å®Œäº†é€šçŸ¥ */
 
-    /* ƒXƒ^[ƒg‘Ò‹@ */
+    /* ã‚¹ã‚¿ãƒ¼ãƒˆå¾…æ©Ÿ */
     while(1)
     {
-        tail_control(TAIL_ANGLE_STAND_UP); /* Š®‘S’â~—pŠp“x‚É§Œä */
+        tail_control(TAIL_ANGLE_STAND_UP); /* å®Œå…¨åœæ­¢ç”¨è§’åº¦ã«åˆ¶å¾¡ */
 
         if (bt_cmd == 1)
         {
-            break; /* ƒŠƒ‚[ƒgƒXƒ^[ƒg */
+            break; /* ãƒªãƒ¢ãƒ¼ãƒˆã‚¹ã‚¿ãƒ¼ãƒˆ */
         }
 
         if (ev3_touch_sensor_is_pressed(touch_sensor) == 1)
         {
-            break; /* ƒ^ƒbƒ`ƒZƒ“ƒT‚ª‰Ÿ‚³‚ê‚½ */
+            break; /* ã‚¿ãƒƒãƒã‚»ãƒ³ã‚µãŒæŠ¼ã•ã‚ŒãŸ */
         }
 
-        tslp_tsk(10); /* 10msecƒEƒFƒCƒg */
+        tslp_tsk(10); /* 10msecã‚¦ã‚§ã‚¤ãƒˆ */
     }
 
-    /* ‘–sƒ‚[ƒ^[ƒGƒ“ƒR[ƒ_[ƒŠƒZƒbƒg */
+    /* èµ°è¡Œãƒ¢ãƒ¼ã‚¿ãƒ¼ã‚¨ãƒ³ã‚³ãƒ¼ãƒ€ãƒ¼ãƒªã‚»ãƒƒãƒˆ */
     ev3_motor_reset_counts(left_motor);
     ev3_motor_reset_counts(right_motor);
 
-    /* ƒWƒƒƒCƒƒZƒ“ƒT[ƒŠƒZƒbƒg */
+    /* ã‚¸ãƒ£ã‚¤ãƒ­ã‚»ãƒ³ã‚µãƒ¼ãƒªã‚»ãƒƒãƒˆ */
     ev3_gyro_sensor_reset(gyro_sensor);
-    balance_init(); /* “|—§UqAPI‰Šú‰» */
+    balance_init(); /* å€’ç«‹æŒ¯å­APIåˆæœŸåŒ– */
 
-    ev3_led_set_color(LED_GREEN); /* ƒXƒ^[ƒg’Ê’m */
+    ev3_led_set_color(LED_GREEN); /* ã‚¹ã‚¿ãƒ¼ãƒˆé€šçŸ¥ */
 
     /**
     * Main loop for the self-balance control algorithm
@@ -140,36 +140,36 @@ void main_task(intptr_t unused)
 
         if (ev3_button_is_pressed(BACK_BUTTON)) break;
 
-        tail_control(TAIL_ANGLE_DRIVE); /* ƒoƒ‰ƒ“ƒX‘–s—pŠp“x‚É§Œä */
+        tail_control(TAIL_ANGLE_DRIVE); /* ãƒãƒ©ãƒ³ã‚¹èµ°è¡Œç”¨è§’åº¦ã«åˆ¶å¾¡ */
 
-        if (sonar_alert() == 1) /* áŠQ•¨ŒŸ’m */
+        if (sonar_alert() == 1) /* éšœå®³ç‰©æ¤œçŸ¥ */
         {
-            forward = turn = 0; /* áŠQ•¨‚ğŒŸ’m‚µ‚½‚ç’â~ */
+            forward = turn = 0; /* éšœå®³ç‰©ã‚’æ¤œçŸ¥ã—ãŸã‚‰åœæ­¢ */
         }
         else
         {
-            forward = 30; /* ‘Oi–½—ß */
+            forward = 30; /* å‰é€²å‘½ä»¤ */
             if (ev3_color_sensor_get_reflect(color_sensor) >= (LIGHT_WHITE + LIGHT_BLACK)/2)
             {
-                turn =  20; /* ¶ù‰ñ–½—ß */
+                turn =  20; /* å·¦æ—‹å›å‘½ä»¤ */
             }
             else
             {
-                turn = -20; /* ‰Eù‰ñ–½—ß */
+                turn = -20; /* å³æ—‹å›å‘½ä»¤ */
             }
         }
 
-        /* “|—§Uq§ŒäAPI ‚É“n‚·ƒpƒ‰ƒ[ƒ^[‚ğæ“¾‚·‚é */
+        /* å€’ç«‹æŒ¯å­åˆ¶å¾¡API ã«æ¸¡ã™ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã‚’å–å¾—ã™ã‚‹ */
         motor_ang_l = ev3_motor_get_counts(left_motor);
         motor_ang_r = ev3_motor_get_counts(right_motor);
         gyro = ev3_gyro_sensor_get_rate(gyro_sensor);
         volt = ev3_battery_voltage_mV();
 
-        /* ƒoƒbƒNƒ‰ƒbƒVƒ…ƒLƒƒƒ“ƒZƒ‹ */
+        /* ãƒãƒƒã‚¯ãƒ©ãƒƒã‚·ãƒ¥ã‚­ãƒ£ãƒ³ã‚»ãƒ« */
         backlash_cancel(pwm_L, pwm_R, &motor_ang_l, &motor_ang_r);
 
-        /* “|—§Uq§ŒäAPI‚ğŒÄ‚Ño‚µA“|—§‘–s‚·‚é‚½‚ß‚Ì */
-        /* ¶‰Eƒ‚[ƒ^[o—Í’l‚ğ“¾‚é */
+        /* å€’ç«‹æŒ¯å­åˆ¶å¾¡APIã‚’å‘¼ã³å‡ºã—ã€å€’ç«‹èµ°è¡Œã™ã‚‹ãŸã‚ã® */
+        /* å·¦å³ãƒ¢ãƒ¼ã‚¿ãƒ¼å‡ºåŠ›å€¤ã‚’å¾—ã‚‹ */
         balance_control(
             (float)forward,
             (float)turn,
@@ -181,8 +181,8 @@ void main_task(intptr_t unused)
             (signed char*)&pwm_L,
             (signed char*)&pwm_R);
 
-        /* EV3‚Å‚Íƒ‚[ƒ^[’â~‚ÌƒuƒŒ[ƒLİ’è‚ª–‘O‚É‚Å‚«‚È‚¢‚½‚ß */
-        /* o—Í0‚ÉA‚»‚Ì“s“xİ’è‚·‚é */
+        /* EV3ã§ã¯ãƒ¢ãƒ¼ã‚¿ãƒ¼åœæ­¢æ™‚ã®ãƒ–ãƒ¬ãƒ¼ã‚­è¨­å®šãŒäº‹å‰ã«ã§ããªã„ãŸã‚ */
+        /* å‡ºåŠ›0æ™‚ã«ã€ãã®éƒ½åº¦è¨­å®šã™ã‚‹ */
         if (pwm_L == 0)
         {
              ev3_motor_stop(left_motor, true);
@@ -201,7 +201,7 @@ void main_task(intptr_t unused)
             ev3_motor_set_power(right_motor, (int)pwm_R);
         }
 
-        tslp_tsk(4); /* 4msecüŠú‹N“® */
+        tslp_tsk(4); /* 4msecå‘¨æœŸèµ·å‹• */
     }
     ev3_motor_stop(left_motor, false);
     ev3_motor_stop(right_motor, false);
@@ -213,10 +213,10 @@ void main_task(intptr_t unused)
 }
 
 //*****************************************************************************
-// ŠÖ”–¼ : sonar_alert
-// ˆø” : –³‚µ
-// •Ô‚è’l : 1(áŠQ•¨‚ ‚è)/0(áŠQ•¨–³‚µ)
-// ŠT—v : ’´‰¹”gƒZƒ“ƒT‚É‚æ‚éáŠQ•¨ŒŸ’m
+// é–¢æ•°å : sonar_alert
+// å¼•æ•° : ç„¡ã—
+// è¿”ã‚Šå€¤ : 1(éšœå®³ç‰©ã‚ã‚Š)/0(éšœå®³ç‰©ç„¡ã—)
+// æ¦‚è¦ : è¶…éŸ³æ³¢ã‚»ãƒ³ã‚µã«ã‚ˆã‚‹éšœå®³ç‰©æ¤œçŸ¥
 //*****************************************************************************
 static int sonar_alert(void)
 {
@@ -225,21 +225,21 @@ static int sonar_alert(void)
 
     signed int distance;
 
-    if (++counter == 40/4) /* –ñ40msecüŠú–ˆ‚ÉáŠQ•¨ŒŸ’m  */
+    if (++counter == 40/4) /* ç´„40msecå‘¨æœŸæ¯ã«éšœå®³ç‰©æ¤œçŸ¥  */
     {
         /*
-         * ’´‰¹”gƒZƒ“ƒT‚É‚æ‚é‹——£‘ª’èüŠú‚ÍA’´‰¹”g‚ÌŒ¸Š“Á«‚ÉˆË‘¶‚µ‚Ü‚·B
-         * NXT‚Ìê‡‚ÍA40msecüŠú’ö“x‚ªŒoŒ±ã‚ÌÅ’Z‘ª’èüŠú‚Å‚·B
-         * EV3‚Ìê‡‚ÍA—vŠm”F
+         * è¶…éŸ³æ³¢ã‚»ãƒ³ã‚µã«ã‚ˆã‚‹è·é›¢æ¸¬å®šå‘¨æœŸã¯ã€è¶…éŸ³æ³¢ã®æ¸›è¡°ç‰¹æ€§ã«ä¾å­˜ã—ã¾ã™ã€‚
+         * NXTã®å ´åˆã¯ã€40msecå‘¨æœŸç¨‹åº¦ãŒçµŒé¨“ä¸Šã®æœ€çŸ­æ¸¬å®šå‘¨æœŸã§ã™ã€‚
+         * EV3ã®å ´åˆã¯ã€è¦ç¢ºèª
          */
         distance = ev3_ultrasonic_sensor_get_distance(sonar_sensor);
         if ((distance <= SONAR_ALERT_DISTANCE) && (distance >= 0))
         {
-            alert = 1; /* áŠQ•¨‚ğŒŸ’m */
+            alert = 1; /* éšœå®³ç‰©ã‚’æ¤œçŸ¥ */
         }
         else
         {
-            alert = 0; /* áŠQ•¨–³‚µ */
+            alert = 0; /* éšœå®³ç‰©ç„¡ã— */
         }
         counter = 0;
     }
@@ -248,15 +248,15 @@ static int sonar_alert(void)
 }
 
 //*****************************************************************************
-// ŠÖ”–¼ : tail_control
-// ˆø” : angle (ƒ‚[ƒ^[–Ú•WŠp“x[“x])
-// •Ô‚è’l : –³‚µ
-// ŠT—v : ‘–s‘ÌŠ®‘S’â~—pƒ‚[ƒ^[‚ÌŠp“x§Œä
+// é–¢æ•°å : tail_control
+// å¼•æ•° : angle (ãƒ¢ãƒ¼ã‚¿ãƒ¼ç›®æ¨™è§’åº¦[åº¦])
+// è¿”ã‚Šå€¤ : ç„¡ã—
+// æ¦‚è¦ : èµ°è¡Œä½“å®Œå…¨åœæ­¢ç”¨ãƒ¢ãƒ¼ã‚¿ãƒ¼ã®è§’åº¦åˆ¶å¾¡
 //*****************************************************************************
 static void tail_control(signed int angle)
 {
-    signed int pwm = (signed int)((angle - ev3_motor_get_counts(tail_motor))*P_GAIN); /* ”ä—á§Œä */
-    /* PWMo—Í–O˜aˆ— */
+    signed int pwm = (signed int)((angle - ev3_motor_get_counts(tail_motor))*P_GAIN); /* æ¯”ä¾‹åˆ¶å¾¡ */
+    /* PWMå‡ºåŠ›é£½å’Œå‡¦ç† */
     if (pwm > PWM_ABS_MAX)
     {
         pwm = PWM_ABS_MAX;
@@ -277,17 +277,17 @@ static void tail_control(signed int angle)
 }
 
 //*****************************************************************************
-// ŠÖ”–¼ : bt_task
-// ˆø” : unused
-// •Ô‚è’l : ‚È‚µ
-// ŠT—v : Bluetooth’ÊM‚É‚æ‚éƒŠƒ‚[ƒgƒXƒ^[ƒgB Tera Term‚È‚Ç‚Ìƒ^[ƒ~ƒiƒ‹ƒ\ƒtƒg‚©‚çA
-//       ASCIIƒR[ƒh‚Å1‚ğ‘—M‚·‚é‚ÆAƒŠƒ‚[ƒgƒXƒ^[ƒg‚·‚éB
+// é–¢æ•°å : bt_task
+// å¼•æ•° : unused
+// è¿”ã‚Šå€¤ : ãªã—
+// æ¦‚è¦ : Bluetoothé€šä¿¡ã«ã‚ˆã‚‹ãƒªãƒ¢ãƒ¼ãƒˆã‚¹ã‚¿ãƒ¼ãƒˆã€‚ Tera Termãªã©ã®ã‚¿ãƒ¼ãƒŸãƒŠãƒ«ã‚½ãƒ•ãƒˆã‹ã‚‰ã€
+//       ASCIIã‚³ãƒ¼ãƒ‰ã§1ã‚’é€ä¿¡ã™ã‚‹ã¨ã€ãƒªãƒ¢ãƒ¼ãƒˆã‚¹ã‚¿ãƒ¼ãƒˆã™ã‚‹ã€‚
 //*****************************************************************************
 void bt_task(intptr_t unused)
 {
     while(1)
     {
-        uint8_t c = fgetc(bt); /* óM */
+        uint8_t c = fgetc(bt); /* å—ä¿¡ */
         switch(c)
         {
         case '1':
@@ -296,22 +296,22 @@ void bt_task(intptr_t unused)
         default:
             break;
         }
-        fputc(c, bt); /* ƒGƒR[ƒoƒbƒN */
+        fputc(c, bt); /* ã‚¨ã‚³ãƒ¼ãƒãƒƒã‚¯ */
     }
 }
 
 //*****************************************************************************
-// ŠÖ”–¼ : backlash_cancel
-// ˆø” : lpwm (¶ƒ‚[ƒ^[PWM’l ¦‘O‰ñ‚Ìo—Í’l)
-//        rpwm (‰Eƒ‚[ƒ^[PWM’l ¦‘O‰ñ‚Ìo—Í’l)
-//        lenc (¶ƒ‚[ƒ^[ƒGƒ“ƒR[ƒ_[’l)
-//        renc (‰Eƒ‚[ƒ^[ƒGƒ“ƒR[ƒ_[’l)
-// •Ô‚è’l : ‚È‚µ
-// ŠT—v : ’¼‹ß‚ÌPWM’l‚É‰‚¶‚ÄƒGƒ“ƒR[ƒ_[’l‚ÉƒoƒbƒNƒ‰ƒbƒVƒ…•ª‚Ì’l‚ğ’Ç‰Á‚µ‚Ü‚·B
+// é–¢æ•°å : backlash_cancel
+// å¼•æ•° : lpwm (å·¦ãƒ¢ãƒ¼ã‚¿ãƒ¼PWMå€¤ â€»å‰å›ã®å‡ºåŠ›å€¤)
+//        rpwm (å³ãƒ¢ãƒ¼ã‚¿ãƒ¼PWMå€¤ â€»å‰å›ã®å‡ºåŠ›å€¤)
+//        lenc (å·¦ãƒ¢ãƒ¼ã‚¿ãƒ¼ã‚¨ãƒ³ã‚³ãƒ¼ãƒ€ãƒ¼å€¤)
+//        renc (å³ãƒ¢ãƒ¼ã‚¿ãƒ¼ã‚¨ãƒ³ã‚³ãƒ¼ãƒ€ãƒ¼å€¤)
+// è¿”ã‚Šå€¤ : ãªã—
+// æ¦‚è¦ : ç›´è¿‘ã®PWMå€¤ã«å¿œã˜ã¦ã‚¨ãƒ³ã‚³ãƒ¼ãƒ€ãƒ¼å€¤ã«ãƒãƒƒã‚¯ãƒ©ãƒƒã‚·ãƒ¥åˆ†ã®å€¤ã‚’è¿½åŠ ã—ã¾ã™ã€‚
 //*****************************************************************************
 void backlash_cancel(signed char lpwm, signed char rpwm, int32_t *lenc, int32_t *renc)
 {
-    const int BACKLASHHALF = 4;   // ƒoƒbƒNƒ‰ƒbƒVƒ…‚Ì”¼•ª[deg]
+    const int BACKLASHHALF = 4;   // ãƒãƒƒã‚¯ãƒ©ãƒƒã‚·ãƒ¥ã®åŠåˆ†[deg]
 
     if(lpwm < 0) *lenc += BACKLASHHALF;
     else if(lpwm > 0) *lenc -= BACKLASHHALF;
