@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BTLogReceiver", "BTLogReceiver\BTLogReceiver.csproj", "{069C2DD9-8E96-429D-AB11-C9F0B6B1F9B3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{069C2DD9-8E96-429D-AB11-C9F0B6B1F9B3}.Debug|x86.ActiveCfg = Debug|x86
+		{069C2DD9-8E96-429D-AB11-C9F0B6B1F9B3}.Debug|x86.Build.0 = Debug|x86
+		{069C2DD9-8E96-429D-AB11-C9F0B6B1F9B3}.Release|x86.ActiveCfg = Release|x86
+		{069C2DD9-8E96-429D-AB11-C9F0B6B1F9B3}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -18,5 +18,6 @@ https://1drv.ms/o/s!Ai_EBXR1m6cBgdcFkGIOOjW0CucJIg
   
 ## フォルダ構成
 hts-etrobocon-2019  
+ ├ BTLogReceiver……ログ出力用のBluetoothクライアント
  ├ etroboEV3-master……ソースコード等を格納  
  └ ドキュメント……設計書等を格納  

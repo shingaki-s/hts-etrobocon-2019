@@ -33,3 +33,9 @@
 
 # VSCode
 .vscode
+
+# C#
+*.suo
+*.pdb
+/BTLogReceiver/BTLogReceiver/obj
+/BTLogReceiver/BTLogReceiver/bin
