@@ -35,6 +35,11 @@ static FILE *bt = NULL; /* Bluetoothファイルハンドル */
 /* Bluetooth通信タスクの起動 */
 //act_tsk(BT_TASK);
 
+/* LCDフォントサイズ */
+#define CALIB_FONT (EV3_FONT_SMALL)
+#define CALIB_FONT_WIDTH (6/*TODO: magic number*/)
+#define CALIB_FONT_HEIGHT (8/*TODO: magic number*/)
+
 void main_task(intptr_t unused)
 {
 
@@ -65,12 +70,22 @@ void main_task(intptr_t unused)
 	sprintf(output_string, "calib_light:%d\n", calib_light);
 	fputs(output_string, bt);
 
+
+
 	// モータの角位置をゼロにリセットする
 	ev3_motor_reset_counts(tail_motor);
 
 	/*------------------------スタート待ち------------------------------*/
 	while (1)
 	{
+		/* LCD画面表示 */
+		EV3RT_sensor_param sensor;
+		sensor = GetParam();
+		char * s ;
+		itoa(sensor.color,s,10);
+    	ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
+    	ev3_lcd_draw_string(s, 0, CALIB_FONT_HEIGHT*1);
+
 		// 尻尾で立つ
 		tail_control(TAIL_ANGLE_STAND_UP, P_GAIN_FORWARD);
 
@@ -169,6 +184,8 @@ void main_task(intptr_t unused)
 			//走行
 			EV3RT_Running(pwm_L, pwm_R);
 
+			// sprintf(output_string, "sensor_color:%d\n", sensor.color);
+			// fputs(output_string, bt);
 
 			if (sonar_alert() == 1) /* 障害物検知 */
 
