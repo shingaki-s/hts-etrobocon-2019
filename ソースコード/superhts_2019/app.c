@@ -35,6 +35,7 @@ static FILE *bt = NULL; /* Bluetoothファイルハンドル */
 /* Bluetooth通信タスクの起動 */
 //act_tsk(BT_TASK);
 
+
 void main_task(intptr_t unused)
 {
 
@@ -54,6 +55,8 @@ void main_task(intptr_t unused)
 	// Bluetooth通信タスクの起動
 	/* bluetoothからの信号が入るとbt_cmdが1になる */
 	act_tsk(BT_TASK);
+
+	int count = 1; //ログの行数カウント用
 
 	/*-----------------------キャリブレーション-----------------------------*/
 	int calib_light = 0;
@@ -191,7 +194,7 @@ void main_task(intptr_t unused)
 			for(int str_clear_cnt = 0; str_clear_cnt < 300; str_clear_cnt++){
 				output_string[str_clear_cnt] = 0;
 			}
-			sprintf(output_string, "color:%d  forward:%d  turn:%d  pwm_L:%d  pwm_R:%d\n", sensor.color, forward, turn, pwm_L, pwm_R);
+			sprintf(output_string, "%d\tcolor:%3d    forward:%4d   turn:%4d    pwm_L:%4d    pwm_R:%4d\n",count++ ,sensor.color, forward, turn, pwm_L, pwm_R);
 			fputs(output_string, bt);
 
 			if (sonar_alert() == 1) /* 障害物検知 */

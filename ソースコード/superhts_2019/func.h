@@ -56,8 +56,8 @@ static const motor_port_t
 //#define DELTA_T 0.004
 #define DELTA_T 0.004
 
-#define KP 0.37812345345732410312379
-//#define KP 0.70
+//#define KP 0.38
+#define KP 0.70
 //#define KP 0.64
 //#define KP 0.66
 //#define KP 0.72
@@ -69,10 +69,11 @@ static const motor_port_t
 //#define KI 0.003
 //#define KI 0.0022
 //#define KI 0.05
-//#define KI 0.0
 //#define KI 0.0015
-//#define KI 0.002
-#define KI 0.0571613131354654168498461
+#define KI 0.002
+//#define KI 1.2
+//#define KI 0.03
+//#define KI 0
 
 
 //#define KD 0.09
@@ -82,10 +83,11 @@ static const motor_port_t
 //#define KD 0.10
 //#define KD 0.12
 //#define KD 0.11
-//#define KD 0.09
+#define KD 0.09
 //#define KD 0.085
 //#define KD 0.10
-#define KD 0.0275646846635461465161
+//#define KD 0.03
+//#define KD 0
 
 /* KDはKP,KIとは異符号にしなければならないのでは？ */
 /*TILT_PID制御用パラメタ*/
@@ -141,7 +143,7 @@ static const motor_port_t
 
 
 /*PID制御用buffer*/
-int reflection_diff[2];
+static int reflection_diff[2] = {0,0};
 int deg_diff[2];
 
 

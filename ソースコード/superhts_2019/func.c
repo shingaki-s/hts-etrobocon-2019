@@ -95,7 +95,7 @@ void EV3RT_Running(signed char pwm_L, signed char pwm_R){
 int pid_reflection(int sensor_val, int target_val){
     /* 追加 */
 	//int p,i,d;
-    // float p, i, d;
+    //  float p, i, d;
 
 	// reflection_diff[0] = reflection_diff[1];
 	// reflection_diff[1] = sensor_val - target_val;
@@ -103,31 +103,48 @@ int pid_reflection(int sensor_val, int target_val){
     // total += (reflection_diff[0] + reflection_diff[1])/2.0 *DELTA_T;
 
 	// p = KP * reflection_diff[1];
-	// //p = 0.38 * reflection_diff[1];
     // /* 積分になっていない */
 	// /* i = KI * (reflection_diff[0] + reflection_diff[1]) * DELTA_T / 2; */
     // i = KI * total ;
 
-	// d =  KD * abs(reflection_diff[1] - reflection_diff[0]) / DELTA_T;
+	// d =  KD * (reflection_diff[1] - reflection_diff[0]) / DELTA_T;
 
-	// //return (int)p;
 	// return (int)(p+i+d);
 
-	float p, i, d;
+	// float p, i, d;
 
-	reflection_diff[1] = sensor_val - target_val;
+	// reflection_diff[0] = reflection_diff[1];
+	// reflection_diff[1] = sensor_val - target_val;
 
-	p = KP * (reflection_diff[1]);
+	// total += reflection_diff[1] * DELTA_T;
 
-    i = KI * (reflection_diff[1] + reflection_diff[0]) * DELTA_T / 2;
+	// p = KP * (reflection_diff[1]);
 
-	d = KD * abs(reflection_diff[1] - reflection_diff[0]) / DELTA_T;
+    // i = KI * total;
 
-	reflection_diff[0] = reflection_diff[1];
+	// d = KD * (reflection_diff[1] - reflection_diff[0]) / DELTA_T;
 
 	//total =  p + i + d;
 
-	return (int)(p + i + d);
+	//return (int)(p + i + d);
+
+	float p, i, d;
+	float diff;
+
+	diff = sensor_val - target_val;
+
+	p = KP * (diff - reflection_diff[1]);
+
+    i = KI * (diff + reflection_diff[1]) * DELTA_T / 2;
+
+	d = 0.5 * KD * (diff - 2*reflection_diff[1] + reflection_diff[0]) / DELTA_T;
+
+	reflection_diff[0] = reflection_diff[1];
+	reflection_diff[1] = diff;
+
+	total = total + p + i + d;
+
+	return (int)(total);
 }
 
 //*****************************************************************************
