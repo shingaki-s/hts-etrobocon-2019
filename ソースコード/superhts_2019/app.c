@@ -35,17 +35,12 @@ static FILE *bt = NULL; /* Bluetoothファイルハンドル */
 /* Bluetooth通信タスクの起動 */
 //act_tsk(BT_TASK);
 
-/* LCDフォントサイズ */
-#define CALIB_FONT (EV3_FONT_SMALL)
-#define CALIB_FONT_WIDTH (6/*TODO: magic number*/)
-#define CALIB_FONT_HEIGHT (8/*TODO: magic number*/)
-
 void main_task(intptr_t unused)
 {
 
 	/*-------------------------セットアップ--------------------------------*/
 	// 変数定義
-	signed char forward = 0;	   // 前進命令(-100～100)
+	signed char forward = 60;	   // 前進命令(-100～100)
 	signed char turn = 0;		   // 転回命令(-100～100)
 	signed char pwm_L, pwm_R;	  // モータ回転量(-100～100)
 	char output_string[300] = {0}; // 文字出力用(bluetooth)
@@ -70,22 +65,12 @@ void main_task(intptr_t unused)
 	sprintf(output_string, "calib_light:%d\n", calib_light);
 	fputs(output_string, bt);
 
-
-
 	// モータの角位置をゼロにリセットする
 	ev3_motor_reset_counts(tail_motor);
 
 	/*------------------------スタート待ち------------------------------*/
 	while (1)
 	{
-		/* LCD画面表示 */
-		EV3RT_sensor_param sensor;
-		sensor = GetParam();
-		char * s ;
-		itoa(sensor.color,s,10);
-    	ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
-    	ev3_lcd_draw_string(s, 0, CALIB_FONT_HEIGHT*1);
-
 		// 尻尾で立つ
 		tail_control(TAIL_ANGLE_STAND_UP, P_GAIN_FORWARD);
 
@@ -145,6 +130,12 @@ void main_task(intptr_t unused)
 		{
 			break;
 		}
+
+		if (bt_cmd == 0)
+		{
+			break;
+		}
+
 		/* 追加終わり */
 
 		// 角度演算と距離計算はずっと行う
@@ -155,14 +146,6 @@ void main_task(intptr_t unused)
 		/* 2で割らなくてよいのか？ちなみに、WHEEL_Rは半径ではなく、直径 */
 		distance = 0.5 * (sensor.right + sensor.left) / 360 * PI * WHEEL_R;
 
-		/*
-		//データ送信
-		// ログ出力
-		for(str_clear_cnt = 0; str_clear_cnt < 300; str_clear_cnt++){
-			output_string[str_clear_cnt] = 0;
-		}
-		sprintf(output_string, "angle:%f  dist:%f  differ:%f\n",angle,distance,(distance - count_stop_distance) );
-		fputs(output_string, bt);*/
 
 		// モータの前回の値更新
 		motor_before[RIGHT_MOTOR] = sensor.right;
@@ -173,19 +156,34 @@ void main_task(intptr_t unused)
 		// PHASE2 通常走行
 		case PHASE2:
 			// 速度設定
-			forward = 80;
-			Speed_adjust(forward, 100);
+			//forward = 60;
+			//forward = Speed_adjust(forward, 100);
 			//尻尾を上にキープ
 			tail_control(TAIL_ANGLE_DRIVE, P_GAIN_FORWARD);
 			// PID制御
 			turn = pid_reflection(sensor.color, calib_light);
+			if(turn >= 100){
+				turn = 100;
+			}else if(turn <= -100){
+				turn = -100;
+			}
+			forward = Speed_adjust(turn);
+			//if(turn >= 10 || turn <= -10){
+			//	forward = Speed_adjust(forward, 0);
+			//}
+
 			//倒立振子API
 			EV3RT_Balancer(sensor, forward, turn, &pwm_L, &pwm_R);
 			//走行
 			EV3RT_Running(pwm_L, pwm_R);
 
-			// sprintf(output_string, "sensor_color:%d\n", sensor.color);
-			// fputs(output_string, bt);
+			//データ送信
+			// ログ出力
+			for(int str_clear_cnt = 0; str_clear_cnt < 300; str_clear_cnt++){
+				output_string[str_clear_cnt] = 0;
+			}
+			sprintf(output_string, "color:%d  forward:%d  turn:%d\n", sensor.color, forward, turn);
+			fputs(output_string, bt);
 
 			if (sonar_alert() == 1) /* 障害物検知 */
 
@@ -211,16 +209,16 @@ void main_task(intptr_t unused)
 			//tslp_tsk(4);
 			break;
 
-		//階段下りた後
-		case PHASE21:
-			// 尻尾走行に移行
-			forward = 0;
-			turn = pid_reflection(sensor.color, calib_light); //仮
-			change_tailRunning_Mode();
-			tmp_distance = distance;
-			ev3_motor_steer(left_motor, right_motor, forward, 0);
-			TURN_STATE = PHASE23;
-			break;
+		// 階段下りた後
+		// case PHASE21:
+		// 	// 尻尾走行に移行
+		// 	forward = 0;
+		// 	turn = pid_reflection(sensor.color, calib_light); //仮
+		// 	change_tailRunning_Mode();
+		// 	tmp_distance = distance;
+		// 	ev3_motor_steer(left_motor, right_motor, forward, 0);
+		// 	TURN_STATE = PHASE23;
+		// 	break;
 
 		//尻尾走行移行後一定距離走る
 		case PHASE23:
@@ -233,7 +231,7 @@ void main_task(intptr_t unused)
 				tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
 				//走行速度
 				forward = 10;
-				Speed_adjust(forward, 0);
+				//forward = Speed_adjust(forward, 0);
 				//走行
 				ev3_motor_steer(left_motor, right_motor, forward, 0);
 			}
@@ -270,7 +268,7 @@ void main_task(intptr_t unused)
 				tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
 				//走行速度
 				forward = -10;
-				Speed_adjust(forward, 0);
+				//forward = Speed_adjust(forward, 0);
 				//走行
 				ev3_motor_steer(left_motor, right_motor, forward, 0);
 			}
@@ -294,7 +292,7 @@ void main_task(intptr_t unused)
 				tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
 				//走行速度
 				forward = 10;
-				Speed_adjust(forward, 0);
+				//forward = Speed_adjust(forward, 0);
 				//走行
 				ev3_motor_steer(left_motor, right_motor, forward, 0);
 			}
@@ -312,7 +310,7 @@ void main_task(intptr_t unused)
 			//尻尾固定
 			tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
 			// 速度を0へ
-			forward = Speed_adjust(forward, 0);
+			//forward = forward = Speed_adjust(forward, 0);
 			//走行
 			ev3_motor_steer(left_motor, right_motor, forward, 0);
 			//tslp_tsk(4);		//4msごとに稼働
@@ -350,6 +348,10 @@ void bt_task(intptr_t unused)
 		uint8_t c = fgetc(bt); /* 受信 */
 		switch (c)
 		{
+		case '0':
+			ev3_speaker_play_tone(NOTE_CS6, 1000);
+			bt_cmd = 0;
+			break;
 		case '1':
 			ev3_speaker_play_tone(NOTE_CS6, 1000);
 			bt_cmd = 1;
