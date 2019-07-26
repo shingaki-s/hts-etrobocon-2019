@@ -7,13 +7,13 @@ int 	tilt_pid_reflection		(int sensor_val, int target_val);
 
 
 //****************************************************************************
-// 関数名　?��　Barrier_sensor
-// 引数 ?��　な�?
+// 関数名　：　Barrier_sensor
+// 引数 ：　なし
 // 返り値 : bool
-// 概要　?��　ル�?クア�?プゲートを検知したらtrueを返す�?
+// 概要　：　ルックアップゲートを検知したらtrueを返す。
 //****************************************************************************
 bool Barrier_sensor(){
-	if(cnt_barrier >= 200/4){//0.5秒以上障害物前で止まって�? もともと500
+	if(cnt_barrier >= 200/4){//0.5秒以上障害物前で止まってる もともと500
 		return true;
 		ev3_speaker_play_tone(NOTE_C4,1000);
 	}
@@ -25,13 +25,13 @@ bool Barrier_sensor(){
 
 
 //****************************************************************************
-// 関数名　?��　change_tailRunning_Mode
-// 引数 ?��　な�?
+// 関数名　：　change_tailRunning_Mode
+// 引数 ：　なし
 // 返り値 : void
-// 概要　?��　尻尾走行に移行する（時間制御はこ�?�関数�?で行う?�?
+// 概要　：　尻尾走行に移行する（時間制御はこの関数内で行う）
 //****************************************************************************
 void change_tailRunning_Mode(){
-	//変数定義と初期�?
+	//変数定義と初期化
 	EV3RT_sensor_param sensor;
 	int phase = 0;
 	int turn = 0;
@@ -43,16 +43,16 @@ void change_tailRunning_Mode(){
 	while(loop_flg){
 		switch(phase){
 
-		case 0: //phase0 尻尾を下げ�?
-			//センサ値取�?
+		case 0: //phase0 尻尾を下げる
+			//センサ値取得
 			sensor = GetParam();
-			//尻尾を下げ�? (80度まで�?っくり)
+			//尻尾を下げる (80度までゆっくり)
 			tail_control(STOP_TAIL_ANGLE,P_GAIN_STOP);
-			//バランスもと�?
+			//バランスもとる
 			EV3RT_Balancer(sensor,forward,turn,&pwm_L,&pwm_R);
 			EV3RT_Running(pwm_L,pwm_R);
 
-			//カウントア�?�?
+			//カウントアップ
 			timer += 1;
 
 			// 1s経ったら
@@ -67,16 +67,16 @@ void change_tailRunning_Mode(){
 		case 1: // phase1 少し前に進む
 			//少し前へ
 			forward = STOP_MOTOR_PARAM;
-			//センサ値取�?
+			//センサ値取得
 			sensor = GetParam();
-			//尻尾を下げ�? (80度でキー�?)
+			//尻尾を下げる (80度でキープ)
 			tail_control(STOP_TAIL_ANGLE,P_GAIN_FORWARD);
-			//バランスもと�?
+			//バランスもとる
 			EV3RT_Balancer(sensor,forward,turn,&pwm_L,&pwm_R);
-			//ち�?っと�?け進む
+			//ちょっとだけ進む
 			EV3RT_Running(pwm_L,pwm_R);
 
-			//カウントア�?�?
+			//カウントアップ
 			timer += 1;
 
 			// 0.1s経ったら
@@ -88,16 +88,16 @@ void change_tailRunning_Mode(){
 			}
 			break;
 
-		case 2: // phase2 バランスとることを放�?して尻尾に体重を乗せ�?
-			//ま�?少し前に進む + 尻尾でバランスとる�?�でセンサ値は要らな�?
+		case 2: // phase2 バランスとることを放棄して尻尾に体重を乗せる
+			//まだ少し前に進む + 尻尾でバランスとるのでセンサ値は要らない
 			pwm_R = forward;
 			pwm_L = pwm_R;
-			//尻尾を下げ�? (80度でキー�?)
+			//尻尾を下げる (80度でキープ)
 			tail_control(STOP_TAIL_ANGLE,P_GAIN_FORWARD);
-			//ち�?っと�?け進む
+			//ちょっとだけ進む
 			EV3RT_Running(pwm_L,pwm_R);
 
-			// カウントア�?�?
+			// カウントアップ
 			timer += 1;
 
 			// 0.3s経ったら
@@ -109,7 +109,7 @@ void change_tailRunning_Mode(){
 			}
 			break;
 
-		case 3: //phase3 尻尾の角度を最大に取る�?
+		case 3: //phase3 尻尾の角度を最大に取る。
 			tail_control(TILT_MOTOR_PARAM,P_GAIN_STOP);
 			timer += 1;
 
@@ -120,27 +120,27 @@ void change_tailRunning_Mode(){
 			}
 
 
-		case 99: //終�?処�?
+		case 99: //終了処理
 			//停止する
 			pwm_R = 0;
 			pwm_L = 0;
-			//とま�?
+			//とまる
 			EV3RT_Running(pwm_L,pwm_R);
 			//ev3_speaker_play_tone(NOTE_C6,500);
 
-			//ループを抜け�?
+			//ループを抜ける
 			loop_flg = 0;
 			break;
 		}
-		tslp_tsk(4);		//4msごとに稼�? 
+		tslp_tsk(4);		//4msごとに稼働 
 	}
 }
 
 /*----------------------------------------------------------------------------
- *	関数�?	:	tilt_pid_reflection
- *	引数		:	sensor_val(反�?光�?�実測値) ,  target_val(反�?光�?��?想値)
- *	戻り値	:	turn (どれだけ曲がる�?)
- *	概�?		:	反�?光を基にしたPID制御 (尻尾走行版)
+ *	関数名	:	tilt_pid_reflection
+ *	引数		:	sensor_val(反射光の実測値) ,  target_val(反射光の理想値)
+ *	戻り値	:	turn (どれだけ曲がるか)
+ *	概要		:	反射光を基にしたPID制御 (尻尾走行版)
  *----------------------------------------------------------------------------*/
 int tilt_pid_reflection(int sensor_val, int target_val){
 	int p,i,d;
