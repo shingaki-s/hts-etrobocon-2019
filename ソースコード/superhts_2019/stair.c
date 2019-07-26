@@ -215,11 +215,11 @@ void stair_up(int target){
 		//}
 		
 		//走行
-		EV3RT_Running(pwm_L, pwm_R,turn);
+		EV3RT_Running(pwm_L, pwm_R);
 		
 		//緊急停止用
 		if (ev3_touch_sensor_is_pressed(touch_sensor) == 1){
-			EV3RT_Running(0, 0,0);
+			EV3RT_Running(0, 0);
 			break; /* タッチセンサが押された */
 		}
 		

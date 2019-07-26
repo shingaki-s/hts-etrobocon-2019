@@ -23,7 +23,7 @@
 //関数プロトタイプ定義
 void 				First_setup(void);
 EV3RT_sensor_param 	GetParam(void);
-void 				EV3RT_Running(signed char pwm_L, signed char pwm_R,int turn);
+void 				EV3RT_Running(signed char pwm_L, signed char pwm_R);
 int 				pid_reflection(int sensor_val, int target_val);
 void 				tail_control(signed int angle, float tail_speed);
 void 				EV3RT_Balancer(EV3RT_sensor_param sensor, int forward, int turn,signed char *pwm_L, signed char *pwm_R);
@@ -72,19 +72,15 @@ EV3RT_sensor_param GetParam(){
 //　返り値 :   なし 
 // 概要　：　走行を行う
 //****************************************************************************
-void EV3RT_Running(signed char pwm_L, signed char pwm_R, int turn){
+void EV3RT_Running(signed char pwm_L, signed char pwm_R){
 	if (pwm_L == 0){
 		ev3_motor_stop(left_motor, true);
-	}else if (Speed_adjust(turn) >= 85){
-		ev3_motor_set_power(left_motor, (int)pwm_L+10);
 	}else{
 		ev3_motor_set_power(left_motor, (int)pwm_L);
 	}
 	
 	if (pwm_R == 0){
 		ev3_motor_stop(right_motor, true);
-	}else if (Speed_adjust(turn) >= 85){
-		ev3_motor_set_power(right_motor, (int)pwm_R+10);
 	}else{
 		ev3_motor_set_power(right_motor, (int)pwm_R);
 	}
@@ -99,21 +95,39 @@ void EV3RT_Running(signed char pwm_L, signed char pwm_R, int turn){
 int pid_reflection(int sensor_val, int target_val){
     /* 追加 */
 	//int p,i,d;
-    float p, i, d;
+    // float p, i, d;
 
-	reflection_diff[0] = reflection_diff[1];
+	// reflection_diff[0] = reflection_diff[1];
+	// reflection_diff[1] = sensor_val - target_val;
+
+    // total += (reflection_diff[0] + reflection_diff[1])/2.0 *DELTA_T;
+
+	// p = KP * reflection_diff[1];
+	// //p = 0.38 * reflection_diff[1];
+    // /* 積分になっていない */
+	// /* i = KI * (reflection_diff[0] + reflection_diff[1]) * DELTA_T / 2; */
+    // i = KI * total ;
+
+	// d =  KD * abs(reflection_diff[1] - reflection_diff[0]) / DELTA_T;
+
+	// //return (int)p;
+	// return (int)(p+i+d);
+
+	float p, i, d;
+
 	reflection_diff[1] = sensor_val - target_val;
 
-    total = reflection_diff[0] + reflection_diff[1];
+	p = KP * (reflection_diff[1]);
 
-	p = KP * reflection_diff[1];
-    /* 積分になっていない */
-	/* i = KI * (reflection_diff[0] + reflection_diff[1]) * DELTA_T / 2; */
-    i = KI * total * DELTA_T / 2;
+    i = KI * (reflection_diff[1] + reflection_diff[0]) * DELTA_T / 2;
 
-	d = + KD * (reflection_diff[1] - reflection_diff[0]) / DELTA_T;
+	d = KD * abs(reflection_diff[1] - reflection_diff[0]) / DELTA_T;
 
-	return (int)(p+i+d);
+	reflection_diff[0] = reflection_diff[1];
+
+	//total =  p + i + d;
+
+	return (int)(p + i + d);
 }
 
 //*****************************************************************************

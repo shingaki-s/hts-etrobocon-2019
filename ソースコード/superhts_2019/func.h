@@ -56,7 +56,8 @@ static const motor_port_t
 //#define DELTA_T 0.004
 #define DELTA_T 0.004
 
-#define KP 0.70
+#define KP 0.37812345345732410312379
+//#define KP 0.70
 //#define KP 0.64
 //#define KP 0.66
 //#define KP 0.72
@@ -70,7 +71,8 @@ static const motor_port_t
 //#define KI 0.05
 //#define KI 0.0
 //#define KI 0.0015
-#define KI 0.002
+//#define KI 0.002
+#define KI 0.0571613131354654168498461
 
 
 //#define KD 0.09
@@ -80,9 +82,10 @@ static const motor_port_t
 //#define KD 0.10
 //#define KD 0.12
 //#define KD 0.11
-#define KD 0.09
+//#define KD 0.09
 //#define KD 0.085
 //#define KD 0.10
+#define KD 0.0275646846635461465161
 
 /* KDはKP,KIとは異符号にしなければならないのでは？ */
 /*TILT_PID制御用パラメタ*/
@@ -169,7 +172,7 @@ bool 				Barrier_sensor(void);
 void 				change_tailRunning_Mode(void);
 void 				stair_up(int target);
 bool 				stair_up_detect(int gyro);
-int 				Speed_adjust(signed char now_speed,int target_speed);
+int 				Speed_adjust(int turn);
 bool 				gray_detection(int now_color);
 
 #endif //_FUNC_H_

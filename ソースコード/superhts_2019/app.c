@@ -163,27 +163,35 @@ void main_task(intptr_t unused)
 			tail_control(TAIL_ANGLE_DRIVE, P_GAIN_FORWARD);
 			// PID制御
 			turn = pid_reflection(sensor.color, calib_light);
+			//turn = 0;
 			if(turn >= 100){
 				turn = 100;
 			}else if(turn <= -100){
 				turn = -100;
 			}
 			forward = Speed_adjust(turn);
+			
+
 			//if(turn >= 10 || turn <= -10){
 			//	forward = Speed_adjust(forward, 0);
 			//}
 
 			//倒立振子API
 			EV3RT_Balancer(sensor, forward, turn, &pwm_L, &pwm_R);
-			//走行
-			EV3RT_Running(pwm_L, pwm_R,turn);
+			// //走行
+			// if (abs(pwm_L-pwm_R) <= 5){
+			// 	ev3_motor_steer(left_motor, right_motor, 40, 0);				
+			// }else {
+				EV3RT_Running(pwm_L, pwm_R);
+			// }
+			
 
 			//データ送信
 			// ログ出力
 			for(int str_clear_cnt = 0; str_clear_cnt < 300; str_clear_cnt++){
 				output_string[str_clear_cnt] = 0;
 			}
-			sprintf(output_string, "color:%d  forward:%d  turn:%d\n", sensor.color, forward, turn);
+			sprintf(output_string, "color:%d  forward:%d  turn:%d  pwm_L:%d  pwm_R:%d\n", sensor.color, forward, turn, pwm_L, pwm_R);
 			fputs(output_string, bt);
 
 			if (sonar_alert() == 1) /* 障害物検知 */
@@ -241,7 +249,7 @@ void main_task(intptr_t unused)
 				// PID制御
 				turn = pid_reflection(sensor.color, calib_light);
 				//走行
-				ev3_motor_steer(left_motor, right_motor, forward, turn);
+				ev3_motor_steer(left_motor, right_motor, forward, 0);
 			}
 			// 一定距離走ったら
 			else
@@ -281,7 +289,7 @@ void main_task(intptr_t unused)
 				// PID制御
 				turn = pid_reflection(sensor.color, calib_light);
 				//走行
-				ev3_motor_steer(left_motor, right_motor, forward, turn);
+				ev3_motor_steer(left_motor, right_motor, forward, 0);
 			}
 			// 一定距離走ったら
 			else
@@ -307,7 +315,7 @@ void main_task(intptr_t unused)
 				// PID制御
 				turn = pid_reflection(sensor.color, calib_light);
 				//走行
-				ev3_motor_steer(left_motor, right_motor, forward, turn);
+				ev3_motor_steer(left_motor, right_motor, forward, 0);
 			}
 			// 一定距離走ったら
 			else

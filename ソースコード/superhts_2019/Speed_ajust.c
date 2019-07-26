@@ -16,19 +16,19 @@
 //*****************************************************************************
 int Speed_adjust(int turn){
 	//speed_down_counter++;
-	turn = abs(turn);
-	if (turn >= 50){
+	int turn1 = abs(turn);
+	if (turn1 >= 50){
 		return 0;
-	}else if (turn > 40 && turn < 50){
-		return 50 - sqrt(50*50 - (turn-50)*(turn-50));
-	}else if (turn > 30 && turn <= 40){
-		return 60 - sqrt(50*50 - (turn-50)*(turn-50));
-	}else if (turn > 20 && turn <= 30) {
-		return 70 - sqrt(50*50 - (turn-50)*(turn-50));
-	}else if (turn > 10 && turn <= 20) {
-		return 85 - sqrt(50*50 - (turn-50)*(turn-50));
+	}else if (turn1 > 40 && turn1 < 50){
+		return 50 - sqrt(50*50 - (turn1-50)*(turn1-50));
+	}else if (turn1 > 30 && turn1 <= 40){
+		return 60 - sqrt(50*50 - (turn1-50)*(turn1-50));
+	}else if (turn1 > 20 && turn1 <= 30) {
+		return 70 - sqrt(50*50 - (turn1-50)*(turn1-50));
+	}else if (turn1 > 10 && turn1 <= 20) {
+		return 85 - sqrt(50*50 - (turn1-50)*(turn1-50));
 	}else {
-		return 100 - 1.5 * turn;
+		return 100 - 1.5 * turn1;
 	}
 	//if(turn < 5 && turn > -5){
 	//	return 100;
