@@ -112,7 +112,6 @@ static const motor_port_t
 
 //リンボーのときの車庫までの距離
 #define DISTANCE_GARAGE_LIMBO 2400	//本番用。1m先が車庫
-//#define DISTANCE_GARAGE_LIMBO 30
 //#define DISTANCE_GARAGE_LIMBO 600
 #define DISTANCE_GARAGE_LIMBO_A 700
 #define DISTANCE_GARAGE_LIMBO_B 800
@@ -170,7 +169,7 @@ bool 				Barrier_sensor(void);
 void 				change_tailRunning_Mode(void);
 void 				stair_up(int target);
 bool 				stair_up_detect(int gyro);
-int 				Speed_adjust(int turn);
+int 				Speed_adjust(signed char now_speed,int target_speed);
 bool 				gray_detection(int now_color);
 
 #endif //_FUNC_H_

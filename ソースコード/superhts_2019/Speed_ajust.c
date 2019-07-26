@@ -2,28 +2,42 @@
 #include "func.h"
 #include <math.h>
 #endif
-//80ˆÈã‚Ì”’l‚ğó‚¯æ‚Á‚½‚Æ‚«A­‚µŒ¸‚ç‚µ‚½’l‚ğ•Ô‚·
+//80ä»¥ä¸Šã®æ•°å€¤ã‚’å—ã‘å–ã£ãŸã¨ãã€å°‘ã—æ¸›ã‚‰ã—ãŸå€¤ã‚’è¿”ã™
 
 
-//ƒXƒs[ƒh’²®‚ğ(4 * SPEED_AJUST_CALL_FREQUENCY)ms‚²‚Æ‚És‚¤
+//ã‚¹ãƒ”ãƒ¼ãƒ‰èª¿æ•´ã‚’(4 * SPEED_AJUST_CALL_FREQUENCY)msã”ã¨ã«è¡Œã†
 //#define SPEED_AJUST_CALL_FREQUENCY 25
 
 //*****************************************************************************
-// ŠÖ”–¼ : Speed_adjust
-// ˆø” : now_speed(Œ»İ‚Ì‘¬“x)Ctarget_speed(–Ú•W‚Ì‘¬“x)
-// •Ô‚è’l : ’²®‚µ‚½‘¬“x
-// ŠT—v : ‘¬“x‚ğ–Ú•W’l‚É‹ß‚Ã‚¯‚é
+// é–¢æ•°å : Speed_adjust
+// å¼•æ•° : now_speed(ç¾åœ¨ã®é€Ÿåº¦)ï¼Œtarget_speed(ç›®æ¨™ã®é€Ÿåº¦)
+// è¿”ã‚Šå€¤ : èª¿æ•´ã—ãŸé€Ÿåº¦
+// æ¦‚è¦ : é€Ÿåº¦ã‚’ç›®æ¨™å€¤ã«è¿‘ã¥ã‘ã‚‹
 //*****************************************************************************
 int Speed_adjust(int turn){
 	//speed_down_counter++;
-	if(turn == 0){
-		return 100;
-	}else if(turn < 0){
-		return 100 - sqrt(100*100 - (turn+100)*(turn+100));
+	turn = abs(turn);
+	if (turn >= 50){
+		return 0;
+	}else if (turn > 40 && turn < 50){
+		return 50 - sqrt(50*50 - (turn-50)*(turn-50));
+	}else if (turn > 30 && turn <= 40){
+		return 60 - sqrt(50*50 - (turn-50)*(turn-50));
+	}else if (turn > 20 && turn <= 30) {
+		return 70 - sqrt(50*50 - (turn-50)*(turn-50));
+	}else if (turn > 10 && turn <= 20) {
+		return 85 - sqrt(50*50 - (turn-50)*(turn-50));
 	}else {
-		return 100 - sqrt(100*100 - (turn-100)*(turn-100));
+		return 100 - 1.5 * turn;
 	}
-		//–Ú•W’l‚ÆŒ»İ’l‚Ì·
+	//if(turn < 5 && turn > -5){
+	//	return 100;
+	//}else if(turn <= -10){
+	//	return 100 - sqrt(100*100 - (turn+100)*(turn+100));
+	//}else {
+	//	return 100 - sqrt(100*100 - (turn-100)*(turn-100));
+	//}
+		//ç›®æ¨™å€¤ã¨ç¾åœ¨å€¤ã®å·®
 		//int diff = now_speed - target_speed;
 		//
 		//if(diff > 0){

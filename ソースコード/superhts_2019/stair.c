@@ -19,14 +19,14 @@
 #endif
 #include <stdio.h>
 
-//90“x‹È‚ª‚éÛ‚Ìturn‚Ì’l
+//90åº¦æ›²ãŒã‚‹éš›ã®turnã®å€¤
 #define TURN_PHASE5 -30
 
 
-//‹È‚ª‚é‚Ü‚Å‚Ì‘Ò‹@ŠÔcnt
+//æ›²ãŒã‚‹ã¾ã§ã®å¾…æ©Ÿæ™‚é–“cnt
 #define WAIT_PHASE1 250
 
-//‹È‚ª‚é‚Ü‚Å‚Ì‘Ò‹@ŠÔcnt
+//æ›²ãŒã‚‹ã¾ã§ã®å¾…æ©Ÿæ™‚é–“cnt
 #define WAIT_PHASE4 200
 
 #define FORWARD_STAIR 80;
@@ -35,13 +35,13 @@ void stair_up(int target);
 bool stair_up_detect(int gyro);
 
 //****************************************************************************
-// ŠÖ”–¼@F@stair_up
-// ˆø” F@gyroiƒWƒƒƒCƒƒZƒ“ƒT‚Ì’lj
-//@•Ô‚è’l : T/F ‚s¨”ñ“]“|@‚e¨“]“|
-// ŠT—v@F@“]“|ŒŸ’m‚Éƒ‚[ƒ^[ƒXƒgƒbƒv‚ğ‚©‚¯‚é
+// é–¢æ•°åã€€ï¼šã€€stair_up
+// å¼•æ•° ï¼šã€€gyroï¼ˆã‚¸ãƒ£ã‚¤ãƒ­ã‚»ãƒ³ã‚µã®å€¤ï¼‰
+//ã€€è¿”ã‚Šå€¤ : T/F ï¼´â†’éè»¢å€’ã€€ï¼¦â†’è»¢å€’
+// æ¦‚è¦ã€€ï¼šã€€è»¢å€’æ¤œçŸ¥æ™‚ã«ãƒ¢ãƒ¼ã‚¿ãƒ¼ã‚¹ãƒˆãƒƒãƒ—ã‚’ã‹ã‘ã‚‹
 //****************************************************************************
 void stair_up(int target){
-	//•Ï”éŒ¾ OR ˆø‚«“n‚µ
+	//å¤‰æ•°å®£è¨€ OR å¼•ãæ¸¡ã—
 	EV3RT_sensor_param sensor;
 	signed char pwm_L, pwm_R;
 	int sensor_ave = 0;
@@ -57,7 +57,7 @@ void stair_up(int target){
 		turn = pid_reflection(sensor.color, target);
 			
 		switch(phase){
-			//æ‚è‰z‚¦‚é‚Ü‚Å‚Ì‘Ò‹@@phase2‚Ö
+			//ä¹—ã‚Šè¶Šãˆã‚‹ã¾ã§ã®å¾…æ©Ÿã€€phase2ã¸
 			case 1:	
 			//ev3_speaker_play_tone(NOTE_F6,50);
 			balance_control(
@@ -80,7 +80,7 @@ void stair_up(int target){
 			break;
 			
 			
-			//’èíó‘Ô‚É‚È‚Á‚½‚çphase3‚Ö
+			//å®šå¸¸çŠ¶æ…‹ã«ãªã£ãŸã‚‰phase3ã¸
 			case 2:
 			//ev3_speaker_play_tone(NOTE_D6,1000);
 			balance_control(
@@ -111,7 +111,7 @@ void stair_up(int target){
 			break;
 			
 			
-			//’i·‚ğŒŸ’m‚µ‚½‚çphase4‚Ö
+			//æ®µå·®ã‚’æ¤œçŸ¥ã—ãŸã‚‰phase4ã¸
 			case 3:
 			//ev3_speaker_play_tone(NOTE_E6,50);
 			forward = 30;
@@ -131,7 +131,7 @@ void stair_up(int target){
 			}
 			break;
 				
-			//‹È‚ª‚é‚Ü‚Å‚Ì‘Ò‹@@WAIT_PHASE4ƒJƒEƒ“ƒg‚Ü‚Á‚½‚çphase5‚Ö
+			//æ›²ãŒã‚‹ã¾ã§ã®å¾…æ©Ÿã€€WAIT_PHASE4ã‚«ã‚¦ãƒ³ãƒˆã¾ã£ãŸã‚‰phase5ã¸
 			case 4:	
 			//ev3_speaker_play_tone(NOTE_F6,50);
 			forward = FORWARD_STAIR;
@@ -154,7 +154,7 @@ void stair_up(int target){
 			
 			break;
 			
-			//90“x‹È‚ª‚è‚½‚­‚ÄA‚ª‚ñ‚Î‚Á‚½‚çphase6‚Ö
+			//90åº¦æ›²ãŒã‚ŠãŸãã¦ã€ãŒã‚“ã°ã£ãŸã‚‰phase6ã¸
 			case 5:	
 			//ev3_speaker_play_tone(NOTE_A6,50);
 			balance_control(
@@ -174,7 +174,7 @@ void stair_up(int target){
 			}
 			break;
 			
-			//—‰ºŒã‚Ìƒoƒ‰ƒ“ƒX’²®@WAIT_PHASE4ƒJƒEƒ“ƒg‚Ü‚Á‚½‚çphase7‚Ö
+			//è½ä¸‹å¾Œã®ãƒãƒ©ãƒ³ã‚¹èª¿æ•´ã€€WAIT_PHASE4ã‚«ã‚¦ãƒ³ãƒˆã¾ã£ãŸã‚‰phase7ã¸
 			case 6:	
 			//ev3_speaker_play_tone(NOTE_B6,50);
 			balance_control(
@@ -200,7 +200,7 @@ void stair_up(int target){
 			
 			break;
 			
-			//ü‚ğ’T‚µ‚ÄAæ‚Á‚©‚Á‚½‚ç‚¨‚í‚è
+			//ç·šã‚’æ¢ã—ã¦ã€ä¹—ã£ã‹ã£ãŸã‚‰ãŠã‚ã‚Š
 			case 7:	
 			//ev3_speaker_play_tone(NOTE_C5,50);
 			
@@ -210,17 +210,17 @@ void stair_up(int target){
 			break;
 		}
 	
-		//ÕŒ‚ŒãA”½“®‘Ò‹@ 250‰ñ@= 1s
+		//è¡æ’ƒå¾Œã€åå‹•å¾…æ©Ÿ 250å›ã€€= 1s
 		//for(int wait = 0;wait < 250; wait++){
 		//}
 		
-		//‘–s
-		EV3RT_Running(pwm_L, pwm_R);
+		//èµ°è¡Œ
+		EV3RT_Running(pwm_L, pwm_R,turn);
 		
-		//‹Ù‹}’â~—p
+		//ç·Šæ€¥åœæ­¢ç”¨
 		if (ev3_touch_sensor_is_pressed(touch_sensor) == 1){
-			EV3RT_Running(0, 0);
-			break; /* ƒ^ƒbƒ`ƒZƒ“ƒT‚ª‰Ÿ‚³‚ê‚½ */
+			EV3RT_Running(0, 0,0);
+			break; /* ã‚¿ãƒƒãƒã‚»ãƒ³ã‚µãŒæŠ¼ã•ã‚ŒãŸ */
 		}
 		
 		tslp_tsk(4);
@@ -228,10 +228,10 @@ void stair_up(int target){
 }
 
 //****************************************************************************
-// ŠÖ”–¼@F@stair_up_detect
-// ˆø” F@gyroiƒWƒƒƒCƒƒZƒ“ƒT‚Ì’lj
-//@•Ô‚è’l : T/F ‚s¨”ñ“]“|@‚e¨“]“|
-// ŠT—v@F@“]“|ŒŸ’m‚Éƒ‚[ƒ^[ƒXƒgƒbƒv‚ğ‚©‚¯‚é
+// é–¢æ•°åã€€ï¼šã€€stair_up_detect
+// å¼•æ•° ï¼šã€€gyroï¼ˆã‚¸ãƒ£ã‚¤ãƒ­ã‚»ãƒ³ã‚µã®å€¤ï¼‰
+//ã€€è¿”ã‚Šå€¤ : T/F ï¼´â†’éè»¢å€’ã€€ï¼¦â†’è»¢å€’
+// æ¦‚è¦ã€€ï¼šã€€è»¢å€’æ¤œçŸ¥æ™‚ã«ãƒ¢ãƒ¼ã‚¿ãƒ¼ã‚¹ãƒˆãƒƒãƒ—ã‚’ã‹ã‘ã‚‹
 //****************************************************************************
 bool stair_up_detect(int gyro){
 	

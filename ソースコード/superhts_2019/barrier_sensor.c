@@ -50,7 +50,7 @@ void change_tailRunning_Mode(){
 			tail_control(STOP_TAIL_ANGLE,P_GAIN_STOP);
 			//バランスもとる
 			EV3RT_Balancer(sensor,forward,turn,&pwm_L,&pwm_R);
-			EV3RT_Running(pwm_L,pwm_R);
+			EV3RT_Running(pwm_L,pwm_R,turn);
 
 			//カウントアップ
 			timer += 1;
@@ -74,7 +74,7 @@ void change_tailRunning_Mode(){
 			//バランスもとる
 			EV3RT_Balancer(sensor,forward,turn,&pwm_L,&pwm_R);
 			//ちょっとだけ進む
-			EV3RT_Running(pwm_L,pwm_R);
+			EV3RT_Running(pwm_L,pwm_R,turn);
 
 			//カウントアップ
 			timer += 1;
@@ -95,7 +95,7 @@ void change_tailRunning_Mode(){
 			//尻尾を下げる (80度でキープ)
 			tail_control(STOP_TAIL_ANGLE,P_GAIN_FORWARD);
 			//ちょっとだけ進む
-			EV3RT_Running(pwm_L,pwm_R);
+			EV3RT_Running(pwm_L,pwm_R,turn);
 
 			// カウントアップ
 			timer += 1;
@@ -125,7 +125,7 @@ void change_tailRunning_Mode(){
 			pwm_R = 0;
 			pwm_L = 0;
 			//とまる
-			EV3RT_Running(pwm_L,pwm_R);
+			EV3RT_Running(pwm_L,pwm_R,turn);
 			//ev3_speaker_play_tone(NOTE_C6,500);
 
 			//ループを抜ける

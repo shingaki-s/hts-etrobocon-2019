@@ -77,6 +77,7 @@ void main_task(intptr_t unused)
 		// タッチセンサーが押された場合スタート
 		if (ev3_touch_sensor_is_pressed(touch_sensor) == 1)
 		{
+			tslp_tsk(10);
 			break;
 		}
 		// Bluetoothで1が送られてきたらスタート
@@ -175,7 +176,7 @@ void main_task(intptr_t unused)
 			//倒立振子API
 			EV3RT_Balancer(sensor, forward, turn, &pwm_L, &pwm_R);
 			//走行
-			EV3RT_Running(pwm_L, pwm_R);
+			EV3RT_Running(pwm_L, pwm_R,turn);
 
 			//データ送信
 			// ログ出力
@@ -197,7 +198,7 @@ void main_task(intptr_t unused)
 			//}
 
 			// 距離が2400越え(リンボー用)
-			if (distance > DISTANCE_GARAGE_LIMBO)
+			if (distance > 2400)
 			{
 				ev3_speaker_play_tone(NOTE_D6, 1000);
 				//尻尾を上にキープ
@@ -209,31 +210,38 @@ void main_task(intptr_t unused)
 			//tslp_tsk(4);
 			break;
 
-		// 階段下りた後
-		// case PHASE21:
-		// 	// 尻尾走行に移行
-		// 	forward = 0;
-		// 	turn = pid_reflection(sensor.color, calib_light); //仮
-		// 	change_tailRunning_Mode();
-		// 	tmp_distance = distance;
-		// 	ev3_motor_steer(left_motor, right_motor, forward, 0);
-		// 	TURN_STATE = PHASE23;
-		// 	break;
+		//障害検知した後
+		case PHASE21:
+
+			// ログ出力
+			sprintf(output_string, "distance:%f\n", distance);
+			fputs(output_string, bt);
+
+			// 尻尾走行に移行
+			forward = 0;
+			turn = pid_reflection(sensor.color, calib_light); //仮
+			change_tailRunning_Mode();
+			tmp_distance = distance;
+			ev3_motor_steer(left_motor, right_motor, forward, 0);
+			TURN_STATE = PHASE23;
+			break;
 
 		//尻尾走行移行後一定距離走る
 		case PHASE23:
 			//リンボー後の距離測定開始
 
 			limbo_distance1 = 0.5 * (sensor.right + sensor.left) / 360 * PI * WHEEL_R - tmp_distance;
-			if (limbo_distance1 < 100)
+			if (limbo_distance1 < 50)
 			{
 				//尻尾固定
 				tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
 				//走行速度
 				forward = 10;
 				//forward = Speed_adjust(forward, 0);
+				// PID制御
+				turn = pid_reflection(sensor.color, calib_light);
 				//走行
-				ev3_motor_steer(left_motor, right_motor, forward, 0);
+				ev3_motor_steer(left_motor, right_motor, forward, turn);
 			}
 			// 一定距離走ったら
 			else
@@ -262,15 +270,18 @@ void main_task(intptr_t unused)
 			//リンボー後の距離測定開始
 
 			limbo_distance2 = 0.5 * (sensor.right + sensor.left) / 360 * PI * WHEEL_R - tmp_distance;
-			if (limbo_distance2 > -100)
+			if (limbo_distance2 > -50)
 			{
 				//尻尾固定
 				tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
 				//走行速度
 				forward = -10;
 				//forward = Speed_adjust(forward, 0);
+
+				// PID制御
+				turn = pid_reflection(sensor.color, calib_light);
 				//走行
-				ev3_motor_steer(left_motor, right_motor, forward, 0);
+				ev3_motor_steer(left_motor, right_motor, forward, turn);
 			}
 			// 一定距離走ったら
 			else
@@ -293,13 +304,15 @@ void main_task(intptr_t unused)
 				//走行速度
 				forward = 10;
 				//forward = Speed_adjust(forward, 0);
+				// PID制御
+				turn = pid_reflection(sensor.color, calib_light);
 				//走行
-				ev3_motor_steer(left_motor, right_motor, forward, 0);
+				ev3_motor_steer(left_motor, right_motor, forward, turn);
 			}
 			// 一定距離走ったら
 			else
 			{
-				//バック走行へ
+				//ガレージへ
 				tmp_distance = distance;
 				TURN_STATE = PHASE99;
 			}

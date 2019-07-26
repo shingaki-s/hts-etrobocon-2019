@@ -23,7 +23,7 @@
 //関数プロトタイプ定義
 void 				First_setup(void);
 EV3RT_sensor_param 	GetParam(void);
-void 				EV3RT_Running(signed char pwm_L, signed char pwm_R);
+void 				EV3RT_Running(signed char pwm_L, signed char pwm_R,int turn);
 int 				pid_reflection(int sensor_val, int target_val);
 void 				tail_control(signed int angle, float tail_speed);
 void 				EV3RT_Balancer(EV3RT_sensor_param sensor, int forward, int turn,signed char *pwm_L, signed char *pwm_R);
@@ -34,13 +34,13 @@ void 				initialize_paramater(void);
 static float total = 0;	//PID制御のtotal
 
 void First_setup(){
-	/* センサー入力�?��?�ト�?�設�? */
+	/* センサー入力ポートの設定 */
 	ev3_sensor_config(sonar_sensor, ULTRASONIC_SENSOR);
 	ev3_sensor_config(color_sensor, COLOR_SENSOR);
-	ev3_color_sensor_get_reflect(color_sensor); /* 反�?�?モー�? */
+	ev3_color_sensor_get_reflect(color_sensor); /* 反射率モード */
 	ev3_sensor_config(touch_sensor, TOUCH_SENSOR);
 	ev3_sensor_config(gyro_sensor, GYRO_SENSOR);
-	/* モーター出力�?��?�ト�?�設�? */
+	/* モーター出力ポートの設定 */
 	ev3_motor_config(left_motor, LARGE_MOTOR);
 	ev3_motor_config(right_motor, LARGE_MOTOR);
 	ev3_motor_config(tail_motor, LARGE_MOTOR);
@@ -48,10 +48,10 @@ void First_setup(){
 
 
 //****************************************************************************
-// 関数名　?��　GetParam
-// 引数 ?��　無�?
+// 関数名　：　GetParam
+// 引数 ：　無し
 //　返り値 : センサ値すべて
-// 概要　?��　センサ値取得関数
+// 概要　：　センサ値取得関数
 //****************************************************************************
 EV3RT_sensor_param GetParam(){
 	EV3RT_sensor_param buf;
@@ -67,64 +67,60 @@ EV3RT_sensor_param GetParam(){
 }
 
 //****************************************************************************
-// 関数名　?��　EV3RT_Running
-// 引数 ?��　  pwm_L, pwm_R
-//　返り値 :   な�? 
-// 概要　?��　走行を行う
+// 関数名　：　EV3RT_Running
+// 引数 ：　  pwm_L, pwm_R
+//　返り値 :   なし 
+// 概要　：　走行を行う
 //****************************************************************************
-void EV3RT_Running(signed char pwm_L, signed char pwm_R){
+void EV3RT_Running(signed char pwm_L, signed char pwm_R, int turn){
 	if (pwm_L == 0){
 		ev3_motor_stop(left_motor, true);
+	}else if (Speed_adjust(turn) >= 85){
+		ev3_motor_set_power(left_motor, (int)pwm_L+10);
 	}else{
 		ev3_motor_set_power(left_motor, (int)pwm_L);
 	}
 	
 	if (pwm_R == 0){
 		ev3_motor_stop(right_motor, true);
+	}else if (Speed_adjust(turn) >= 85){
+		ev3_motor_set_power(right_motor, (int)pwm_R+10);
 	}else{
 		ev3_motor_set_power(right_motor, (int)pwm_R);
 	}
 }
 
 /*----------------------------------------------------------------------------
- *	関数�?	:	pid_reflection
- *	引数		:	sensor_val(反�?光�?�実測値) ,  target_val(反�?光�?��?想値)
- *	戻り値	:	turn (どれだけ曲がる�?)
- *	概�?		:	反�?光を基にしたPID制御 
+ *	関数名	:	pid_reflection
+ *	引数		:	sensor_val(反射光の実測値) ,  target_val(反射光の理想値)
+ *	戻り値	:	turn (どれだけ曲がるか)
+ *	概要		:	反射光を基にしたPID制御 
  *----------------------------------------------------------------------------*/
 int pid_reflection(int sensor_val, int target_val){
-    /* 追�? */
+    /* 追加 */
 	//int p,i,d;
     float p, i, d;
- //   static float total;
-	float diff;
-
-	diff = sensor_val - target_val;
-
-	p = KP * (diff - reflection_diff[1]);
-
-    i = KI * (diff + reflection_diff[1]) * DELTA_T / 2;
-
-	d = KD * (diff - 2*reflection_diff[1] + reflection_diff[0]) / DELTA_T;
 
 	reflection_diff[0] = reflection_diff[1];
-	reflection_diff[1] = diff;
+	reflection_diff[1] = sensor_val - target_val;
 
-	total = total + p + i + d;
-	// if(total >= 100){
-	// 	total = 100;
-	// }else if(total <= -100){
-	// 	total = -100;
-	// }
+    total = reflection_diff[0] + reflection_diff[1];
 
-	return (int)(total);
+	p = KP * reflection_diff[1];
+    /* 積分になっていない */
+	/* i = KI * (reflection_diff[0] + reflection_diff[1]) * DELTA_T / 2; */
+    i = KI * total * DELTA_T / 2;
+
+	d = + KD * (reflection_diff[1] - reflection_diff[0]) / DELTA_T;
+
+	return (int)(p+i+d);
 }
 
 //*****************************************************************************
-// 関数�? : tail_control
+// 関数名 : tail_control
 // 引数 : angle (モータ目標角度[度]), tail_speed(尻尾を下ろす速度)
-// 返り値 : 無�?
-// 概�? : 走行体完�?�停止用モータの角度制御
+// 返り値 : 無し
+// 概要 : 走行体完全停止用モータの角度制御
 //*****************************************************************************
 void tail_control(signed int angle, float tail_speed){
 
@@ -146,13 +142,13 @@ void tail_control(signed int angle, float tail_speed){
 
 
 //****************************************************************************
-// 関数名　?��　EV3RT_Balancer
-// 引数 ?��　　
+// 関数名　：　EV3RT_Balancer
+// 引数 ：　　
 //　返り値 : 
-// 概要　?��　
+// 概要　：　
 //****************************************************************************
 void EV3RT_Balancer(EV3RT_sensor_param sensor, int forward, int turn,signed char *pwm_L, signed char *pwm_R){
-	//モーター出力決�?
+	//モーター出力決定
 	balance_control(
 				(float)forward,
 				(float)turn,
@@ -166,10 +162,10 @@ void EV3RT_Balancer(EV3RT_sensor_param sensor, int forward, int turn,signed char
 }
 
 //*****************************************************************************
-// 関数�? : sonar_alert
-// 引数 : 無�?
-// 返り値 : 1(障害物あり)/0(障害物無�?)
-// 概�? : �?音波センサによる障害物検知
+// 関数名 : sonar_alert
+// 引数 : 無し
+// 返り値 : 1(障害物あり)/0(障害物無し)
+// 概要 : 超音波センサによる障害物検知
 //*****************************************************************************
 int sonar_alert(void)
 {
@@ -178,12 +174,12 @@ int sonar_alert(void)
 
 	signed int distance;
 
-	if (++counter == 40/4) /* �?40msec周期毎に障害物検知  */
+	if (++counter == 40/4) /* 約40msec周期毎に障害物検知  */
 	{
 		/*
-		 * �?音波センサによる距離測定周期�?�、�?音波の減衰特性に依存します�?
-		 * NXTの場合�?��?40msec周期程度が経験上�?�最短測定周期です�?
-		 * EV3の場合�?�、要確�?
+		 * 超音波センサによる距離測定周期は、超音波の減衰特性に依存します。
+		 * NXTの場合は、40msec周期程度が経験上の最短測定周期です。
+		 * EV3の場合は、要確認
 		 */
 
 		distance = ev3_ultrasonic_sensor_get_distance(sonar_sensor);
@@ -193,7 +189,7 @@ int sonar_alert(void)
 		}
 		else
 		{
-			alert = 0; /* 障害物無�? */
+			alert = 0; /* 障害物無し */
 		}
 		counter = 0;
 	}
@@ -212,14 +208,14 @@ int light_reflection_calibration(){
 
 
 	/*-------------------- get white param -----------------*/
-	while(1){	//ボタンが押されるまでウェイ�?
+	while(1){	//ボタンが押されるまでウェイト
 		if(ev3_touch_sensor_is_pressed(touch_sensor) == 1){
 			break;
 		}
-		tslp_tsk(10); /* 10msecウェイ�? */
+		tslp_tsk(10); /* 10msecウェイト */
 	}
-	while(1){	//ボタン押下�?
-		/*�?ータを�?��?*/
+	while(1){	//ボタン押下後
+		/*データを格納*/
 		white_line_reflection += ev3_color_sensor_get_reflect(color_sensor);
 		cnt++;
 		if(cnt == 20){
@@ -227,7 +223,7 @@ int light_reflection_calibration(){
 
 			break;
 		}
-		tslp_tsk(4); /* 4msecウェイ�? */
+		tslp_tsk(4); /* 4msecウェイト */
 	}
 	
 	
@@ -235,22 +231,22 @@ int light_reflection_calibration(){
 
 
 	/*-------------------- get black param -----------------*/
-	while(1){//ボタンが押されるまでウェイ�?
+	while(1){//ボタンが押されるまでウェイト
 		if(ev3_touch_sensor_is_pressed(touch_sensor) == 1){
 			cnt = 0;
 			break;
 		}
-		tslp_tsk(10); /* 10msecウェイ�? */
+		tslp_tsk(10); /* 10msecウェイト */
 	}
-	while(1){		//ボタン押下�?
-		/*�?ータを�?��?*/
+	while(1){		//ボタン押下後
+		/*データを格納*/
 		black_line_reflection += ev3_color_sensor_get_reflect(color_sensor);
 		cnt++; //count up
-		if(cnt == 20){//平�?値演�?
+		if(cnt == 20){//平均値演算
 			black_line_reflection = black_line_reflection / 20;
 			break;
 		}
-		tslp_tsk(4); /* 4msecウェイ�? */
+		tslp_tsk(4); /* 4msecウェイト */
 	}
 
 	tslp_tsk(1000);
