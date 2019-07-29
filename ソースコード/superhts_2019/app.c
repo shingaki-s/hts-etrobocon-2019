@@ -198,9 +198,12 @@ void main_task(intptr_t unused)
 			sprintf(output_string, "%d\tcolor:%3d    forward:%4d   turn:%4d    pwm_L:%4d    pwm_R:%4d\n",count++ ,sensor.color, forward, turn, pwm_L, pwm_R);
 			fputs(output_string, bt);
 
-			if (sonar_alert() == 1) /* 障害物検知 */
+			int d = sonar_alert();
+			if (d != 0) /* 障害物検知 */
 
 			{
+				sprintf(output_string, "sensor_distance:%d\n",d);
+				fputs(output_string, bt);
 				TURN_STATE = PHASE21; /* 障害物を検知したら停止 */
 			}
 
@@ -231,7 +234,8 @@ void main_task(intptr_t unused)
 
 			// 尻尾走行に移行
 			forward = 0;
-			turn = pid_reflection(sensor.color, calib_light); //仮
+			//turn = pid_reflection(sensor.color, calib_light); //仮
+			//tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
 			change_tailRunning_Mode();
 			tmp_distance = distance;
 			//ev3_motor_steer(left_motor, right_motor, forward, 0);
@@ -248,14 +252,13 @@ void main_task(intptr_t unused)
 				//尻尾固定
 				tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
 				//走行速度
-				forward = 10;
 				//forward = Speed_adjust(forward, 0);
 				// PID制御
-				turn = pid_reflection(sensor.color, calib_light);
+				//turn = pid_reflection(sensor.color, calib_light);
 				//走行
-				EV3RT_Balancer(sensor, forward, turn, &pwm_L, &pwm_R);
-				EV3RT_Running(pwm_L, pwm_R);
-				//ev3_motor_steer(left_motor, right_motor, forward, 0);
+				//EV3RT_Balancer(sensor, forward, turn, &pwm_L, &pwm_R);
+				//EV3RT_Running(pwm_L, pwm_R);
+				ev3_motor_steer(left_motor, right_motor, 10, 0);
 			}
 			// 一定距離走ったら
 			else
@@ -271,13 +274,13 @@ void main_task(intptr_t unused)
 			//tslp_tsk(3000);
 			//TURN_STATE = PHASE25;
 			//break;
-		case PHASE24:
-			// 尻尾走行に移行
-			forward = 0;
-			turn = pid_reflection(sensor.color, calib_light); //仮
-			change_tailRunning_Mode();
-			TURN_STATE = PHASE25;
-			break;
+		// case PHASE24:
+		// 	// 尻尾走行に移行
+		// 	forward = 0;
+		// 	turn = pid_reflection(sensor.color, calib_light); //仮
+		// 	change_tailRunning_Mode();
+		// 	TURN_STATE = PHASE25;
+		// 	break;
 
 		case PHASE25:
 			//尻尾固定
@@ -289,15 +292,14 @@ void main_task(intptr_t unused)
 				//尻尾固定
 				tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
 				//走行速度
-				forward = -10;
 				//forward = Speed_adjust(forward, 0);
 
 				// PID制御
-				turn = pid_reflection(sensor.color, calib_light);
+				//turn = pid_reflection(sensor.color, calib_light);
 				//走行
-				EV3RT_Balancer(sensor, forward, turn, &pwm_L, &pwm_R);
-				EV3RT_Running(pwm_L, pwm_R);
-				//ev3_motor_steer(left_motor, right_motor, forward, 0);
+				//EV3RT_Balancer(sensor, forward, turn, &pwm_L, &pwm_R);
+				//EV3RT_Running(pwm_L, pwm_R);
+				ev3_motor_steer(left_motor, right_motor, -10, 0);
 			}
 			// 一定距離走ったら
 			else
@@ -318,14 +320,13 @@ void main_task(intptr_t unused)
 				//尻尾固定
 				tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
 				//走行速度
-				forward = 10;
 				//forward = Speed_adjust(forward, 0);
 				// PID制御
-				turn = pid_reflection(sensor.color, calib_light);
+				//turn = pid_reflection(sensor.color, calib_light);
 				//走行
-				EV3RT_Balancer(sensor, forward, turn, &pwm_L, &pwm_R);
-				EV3RT_Running(pwm_L, pwm_R);
-				//ev3_motor_steer(left_motor, right_motor, forward, 0);
+				//EV3RT_Balancer(sensor, forward, turn, &pwm_L, &pwm_R);
+				//EV3RT_Running(pwm_L, pwm_R);
+				ev3_motor_steer(left_motor, right_motor, 10, 0);
 			}
 			// 一定距離走ったら
 			else
@@ -343,7 +344,7 @@ void main_task(intptr_t unused)
 			// 速度を0へ
 			//forward = forward = Speed_adjust(forward, 0);
 			//走行
-			ev3_motor_steer(left_motor, right_motor, forward, 0);
+			ev3_motor_steer(left_motor, right_motor, 0, 0);
 			//tslp_tsk(4);		//4msごとに稼働
 			break;
 		}

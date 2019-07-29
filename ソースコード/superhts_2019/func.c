@@ -212,11 +212,11 @@ int sonar_alert(void)
 		 * NXTの場合は、40msec周期程度が経験上の最短測定周期です。
 		 * EV3の場合は、要確認
 		 */
-
+		
 		distance = ev3_ultrasonic_sensor_get_distance(sonar_sensor);
 		if ((distance <= SONAR_ALERT_DISTANCE) && (distance >= 0))
 		{
-			alert = 1; /* 障害物を検知 */
+			alert = distance; /* 障害物を検知 */
 		}
 		else
 		{

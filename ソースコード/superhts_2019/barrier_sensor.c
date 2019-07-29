@@ -91,7 +91,7 @@ void change_tailRunning_Mode(){
 		case 2: // phase2 バランスとることを放棄して尻尾に体重を乗せる
 			//まだ少し前に進む + 尻尾でバランスとるのでセンサ値は要らない
 			pwm_R = forward;
-			pwm_L = pwm_R;
+			pwm_L = forward;
 			//尻尾を下げる (80度でキープ)
 			tail_control(STOP_TAIL_ANGLE,P_GAIN_FORWARD);
 			//ちょっとだけ進む
