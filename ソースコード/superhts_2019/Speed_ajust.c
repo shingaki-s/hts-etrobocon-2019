@@ -20,16 +20,29 @@ int Speed_adjust(int turn){
 	if (turn1 >= 50){
 		return 0;
 	}else if (turn1 > 40 && turn1 < 50){
-		return 50 - sqrt(50*50 - (turn1-50)*(turn1-50));
+		return 80 - sqrt(50*50 - (turn1-50)*(turn1-50));
 	}else if (turn1 > 30 && turn1 <= 40){
-		return 60 - sqrt(50*50 - (turn1-50)*(turn1-50));
-	}else if (turn1 > 20 && turn1 <= 30) {
-		return 70 - sqrt(50*50 - (turn1-50)*(turn1-50));
-	}else if (turn1 > 10 && turn1 <= 20) {
 		return 85 - sqrt(50*50 - (turn1-50)*(turn1-50));
+	}else if (turn1 > 20 && turn1 <= 30) {
+		return 90 - sqrt(50*50 - (turn1-50)*(turn1-50));
+	}else if (turn1 > 10 && turn1 <= 20) {
+		return 95 - sqrt(50*50 - (turn1-50)*(turn1-50));
 	}else {
 		return 100 - 1.5 * turn1;
 	}
+	// 	if (turn1 >= 50){
+	// 	return 0;
+	// }else if (turn1 > 40 && turn1 < 50){
+	// 	return 50 - sqrt(50*50 - (turn1-50)*(turn1-50));
+	// }else if (turn1 > 30 && turn1 <= 40){
+	// 	return 60 - sqrt(50*50 - (turn1-50)*(turn1-50));
+	// }else if (turn1 > 20 && turn1 <= 30) {
+	// 	return 70 - sqrt(50*50 - (turn1-50)*(turn1-50));
+	// }else if (turn1 > 10 && turn1 <= 20) {
+	// 	return 85 - sqrt(50*50 - (turn1-50)*(turn1-50));
+	// }else {
+	// 	return 100 - 1.5 * turn1;
+	// }
 	//if(turn < 5 && turn > -5){
 	//	return 100;
 	//}else if(turn <= -10){

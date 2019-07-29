@@ -144,7 +144,7 @@ int pid_reflection(int sensor_val, int target_val){
 
 	total = total + p + i + d;
 
-	return (int)(total);
+	return (int)(-total);
 }
 
 //*****************************************************************************

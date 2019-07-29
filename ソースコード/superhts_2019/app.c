@@ -147,6 +147,7 @@ void main_task(intptr_t unused)
 		sensor = GetParam();
 
 		// 距離演算
+
 		/* 2で割らなくてよいのか？ちなみに、WHEEL_Rは半径ではなく、直径 */
 		distance = 0.5 * (sensor.right + sensor.left) / 360 * PI * WHEEL_R;
 
@@ -233,7 +234,7 @@ void main_task(intptr_t unused)
 			turn = pid_reflection(sensor.color, calib_light); //仮
 			change_tailRunning_Mode();
 			tmp_distance = distance;
-			ev3_motor_steer(left_motor, right_motor, forward, 0);
+			//ev3_motor_steer(left_motor, right_motor, forward, 0);
 			TURN_STATE = PHASE23;
 			break;
 
@@ -252,7 +253,9 @@ void main_task(intptr_t unused)
 				// PID制御
 				turn = pid_reflection(sensor.color, calib_light);
 				//走行
-				ev3_motor_steer(left_motor, right_motor, forward, 0);
+				EV3RT_Balancer(sensor, forward, turn, &pwm_L, &pwm_R);
+				EV3RT_Running(pwm_L, pwm_R);
+				//ev3_motor_steer(left_motor, right_motor, forward, 0);
 			}
 			// 一定距離走ったら
 			else
@@ -292,7 +295,9 @@ void main_task(intptr_t unused)
 				// PID制御
 				turn = pid_reflection(sensor.color, calib_light);
 				//走行
-				ev3_motor_steer(left_motor, right_motor, forward, 0);
+				EV3RT_Balancer(sensor, forward, turn, &pwm_L, &pwm_R);
+				EV3RT_Running(pwm_L, pwm_R);
+				//ev3_motor_steer(left_motor, right_motor, forward, 0);
 			}
 			// 一定距離走ったら
 			else
@@ -308,7 +313,7 @@ void main_task(intptr_t unused)
 			//リンボー後の距離測定開始
 
 			limbo_distance3 = 0.5 * (sensor.right + sensor.left) / 360 * PI * WHEEL_R - tmp_distance;
-			if (limbo_distance3 < 150)
+			if (limbo_distance3 < 100)
 			{
 				//尻尾固定
 				tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
@@ -318,7 +323,9 @@ void main_task(intptr_t unused)
 				// PID制御
 				turn = pid_reflection(sensor.color, calib_light);
 				//走行
-				ev3_motor_steer(left_motor, right_motor, forward, 0);
+				EV3RT_Balancer(sensor, forward, turn, &pwm_L, &pwm_R);
+				EV3RT_Running(pwm_L, pwm_R);
+				//ev3_motor_steer(left_motor, right_motor, forward, 0);
 			}
 			// 一定距離走ったら
 			else
