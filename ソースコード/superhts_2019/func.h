@@ -93,12 +93,13 @@ static const motor_port_t
 /*TILT_PID制御用パラメタ*/
 #define TILT_KP 4.20
 /*尻尾を用いた3点でたつときのパラメタ*/
-#define STOP_TAIL_ANGLE 60 /*尻尾を着地させるためのパラメタ68*/
-#define STOP_MOTOR_PARAM 30 /*ちょっとだけ進むためのパラメタ*/
+#define STOP_TAIL_ANGLE 71 /*尻尾を着地させるためのパラメタ68*/
+#define STOP_MOTOR_PARAM 20 /*ちょっとだけ進むためのパラメタ*/
 #define TAIL MOTOR PARAM 10 /*仮決め定数、リンボー後のスピード*/
 #define TILT_MOTOR_PARAM 80 /*斜め状態になるためのパラメタ*/
 /*自己位置推定用パラメタ*/
 #define WHEEL_R 10
+
 #define EV3RT_WIDTH 16.2
 #define PI 3.14159
 /*転倒検知パラメタ*/
@@ -165,7 +166,7 @@ EV3RT_sensor_param 	GetParam(void);
 void 				EV3RT_Running(signed char pwm_L, signed char pwm_R);
 int 				pid_reflection(int sensor_val, int target_val);
 int 				tilt_pid_reflection(int sensor_val, int target_val);
-void 				tail_control(signed int angle, float tail_speed);	
+void 				tail_control(int angle);	
 void 				EV3RT_Balancer(EV3RT_sensor_param sensor, int forward, int turn,signed char *pwm_L, signed char *pwm_R);
 int 				sonar_alert(void);
 int 				light_reflection_calibration(void);

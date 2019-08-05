@@ -75,7 +75,7 @@ void main_task(intptr_t unused)
 	while (1)
 	{
 		// 尻尾で立つ
-		tail_control(TAIL_ANGLE_STAND_UP, P_GAIN_FORWARD);
+		tail_control(TAIL_ANGLE_STAND_UP);
 
 		// タッチセンサーが押された場合スタート
 		if (ev3_touch_sensor_is_pressed(touch_sensor) == 1)
@@ -164,7 +164,7 @@ void main_task(intptr_t unused)
 			//forward = 60;
 			//forward = Speed_adjust(forward, 100);
 			//尻尾を上にキープ
-			tail_control(TAIL_ANGLE_DRIVE, P_GAIN_FORWARD);
+			tail_control(-82);
 			// PID制御
 			turn = pid_reflection(sensor.color, calib_light);
 			//turn = 0;
@@ -200,7 +200,6 @@ void main_task(intptr_t unused)
 
 			int d = sonar_alert();
 			if (d != 0) /* 障害物検知 */
-
 			{
 				sprintf(output_string, "sensor_distance:%d\n",d);
 				fputs(output_string, bt);
@@ -217,7 +216,7 @@ void main_task(intptr_t unused)
 			{
 				ev3_speaker_play_tone(NOTE_D6, 1000);
 				//尻尾を上にキープ
-				tail_control(TAIL_ANGLE_DRIVE_2, P_GAIN_FORWARD);
+				//tail_control(TAIL_ANGLE_DRIVE_2, P_GAIN_FORWARD);
 				//スピードダウン
 				TURN_STATE = PHASE21;
 			}
@@ -228,17 +227,17 @@ void main_task(intptr_t unused)
 		//障害検知した後
 		case PHASE21:
 
-			// ログ出力
-			sprintf(output_string, "distance:%f\n", distance);
-			fputs(output_string, bt);
+			
 
 			// 尻尾走行に移行
-			forward = 0;
+			//forward = 0;
 			//turn = pid_reflection(sensor.color, calib_light); //仮
 			//tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
-			change_tailRunning_Mode();
 			tmp_distance = distance;
+			change_tailRunning_Mode();
+
 			//ev3_motor_steer(left_motor, right_motor, forward, 0);
+			
 			TURN_STATE = PHASE23;
 			break;
 
@@ -249,14 +248,17 @@ void main_task(intptr_t unused)
 			limbo_distance1 = 0.5 * (sensor.right + sensor.left) / 360 * PI * WHEEL_R - tmp_distance;
 			if (limbo_distance1 < 50)
 			{
+				// ログ出力
+				sprintf(output_string, "pwm_L:%4d    pwm_R:%4d\n", pwm_L,pwm_R);
+				fputs(output_string, bt);
 				//尻尾固定
-				tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
+				//tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
 				//走行速度
 				//forward = Speed_adjust(forward, 0);
 				// PID制御
 				//turn = pid_reflection(sensor.color, calib_light);
 				//走行
-				//EV3RT_Balancer(sensor, forward, turn, &pwm_L, &pwm_R);
+				//EV3RT_Balancer(sensor, 10, 0, &pwm_L, &pwm_R);
 				//EV3RT_Running(pwm_L, pwm_R);
 				ev3_motor_steer(left_motor, right_motor, 10, 0);
 			}
@@ -266,8 +268,9 @@ void main_task(intptr_t unused)
 				//バック走行へ
 				tmp_distance = distance;
 				TURN_STATE = PHASE25;
+				tslp_tsk(10);	
 			}
-			//tslp_tsk(4);		//4msごとに稼働
+			//tslp_tsk(10);		//4msごとに稼働
 			break;
 			//case PHASE80:
 			//ev3_speaker_play_tone(NOTE_D6,1000);
@@ -289,15 +292,18 @@ void main_task(intptr_t unused)
 			limbo_distance2 = 0.5 * (sensor.right + sensor.left) / 360 * PI * WHEEL_R - tmp_distance;
 			if (limbo_distance2 > -50)
 			{
+				// ログ出力
+				sprintf(output_string, "pwm_L:%4d    pwm_R:%4d\n", pwm_L,pwm_R);
+				fputs(output_string, bt);
 				//尻尾固定
-				tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
+				//tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
 				//走行速度
 				//forward = Speed_adjust(forward, 0);
 
 				// PID制御
 				//turn = pid_reflection(sensor.color, calib_light);
 				//走行
-				//EV3RT_Balancer(sensor, forward, turn, &pwm_L, &pwm_R);
+				//EV3RT_Balancer(sensor, 10,0, &pwm_L, &pwm_R);
 				//EV3RT_Running(pwm_L, pwm_R);
 				ev3_motor_steer(left_motor, right_motor, -10, 0);
 			}
@@ -317,14 +323,17 @@ void main_task(intptr_t unused)
 			limbo_distance3 = 0.5 * (sensor.right + sensor.left) / 360 * PI * WHEEL_R - tmp_distance;
 			if (limbo_distance3 < 100)
 			{
+				// ログ出力
+				sprintf(output_string, "pwm_L:%4d    pwm_R:%4d\n", pwm_L,pwm_R);
+				fputs(output_string, bt);
 				//尻尾固定
-				tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
+				//tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
 				//走行速度
 				//forward = Speed_adjust(forward, 0);
 				// PID制御
 				//turn = pid_reflection(sensor.color, calib_light);
 				//走行
-				//EV3RT_Balancer(sensor, forward, turn, &pwm_L, &pwm_R);
+				//EV3RT_Balancer(sensor, 10, 0, &pwm_L, &pwm_R);
 				//EV3RT_Running(pwm_L, pwm_R);
 				ev3_motor_steer(left_motor, right_motor, 10, 0);
 			}
@@ -340,9 +349,9 @@ void main_task(intptr_t unused)
 		// 停止処理
 		case PHASE99:
 			//尻尾固定
-			tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
+			tail_control(TILT_MOTOR_PARAM);
 			// 速度を0へ
-			//forward = forward = Speed_adjust(forward, 0);
+			//forward = Speed_adjust(forward, 0);
 			//走行
 			ev3_motor_steer(left_motor, right_motor, 0, 0);
 			//tslp_tsk(4);		//4msごとに稼働

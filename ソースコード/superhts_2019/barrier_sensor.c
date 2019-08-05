@@ -47,7 +47,7 @@ void change_tailRunning_Mode(){
 			//センサ値取得
 			sensor = GetParam();
 			//尻尾を下げる (80度までゆっくり)
-			tail_control(STOP_TAIL_ANGLE,P_GAIN_STOP);
+			tail_control(STOP_TAIL_ANGLE);
 			//バランスもとる
 			EV3RT_Balancer(sensor,forward,turn,&pwm_L,&pwm_R);
 			EV3RT_Running(pwm_L,pwm_R);
@@ -56,7 +56,7 @@ void change_tailRunning_Mode(){
 			timer += 1;
 
 			// 1s経ったら
-			if(timer > 250){
+			if(timer > 10){
 				//次のフェーズへ
 				phase = 1;
 				timer = 0;
@@ -70,7 +70,7 @@ void change_tailRunning_Mode(){
 			//センサ値取得
 			sensor = GetParam();
 			//尻尾を下げる (80度でキープ)
-			tail_control(STOP_TAIL_ANGLE,P_GAIN_FORWARD);
+			tail_control(STOP_TAIL_ANGLE);
 			//バランスもとる
 			EV3RT_Balancer(sensor,forward,turn,&pwm_L,&pwm_R);
 			//ちょっとだけ進む
@@ -93,7 +93,7 @@ void change_tailRunning_Mode(){
 			pwm_R = forward;
 			pwm_L = forward;
 			//尻尾を下げる (80度でキープ)
-			tail_control(STOP_TAIL_ANGLE,P_GAIN_FORWARD);
+			tail_control(STOP_TAIL_ANGLE);
 			//ちょっとだけ進む
 			EV3RT_Running(pwm_L,pwm_R);
 
@@ -110,7 +110,7 @@ void change_tailRunning_Mode(){
 			break;
 
 		case 3: //phase3 尻尾の角度を最大に取る。
-			tail_control(TILT_MOTOR_PARAM,P_GAIN_STOP);
+			tail_control(TILT_MOTOR_PARAM);
 			timer += 1;
 
 			// 2秒たったら
