@@ -32,9 +32,6 @@ static FILE *bt = NULL; /* Bluetoothファイルハンドル */
 #define CMD_START '1'   /* リモートスタートコマンド */
 //========================================//
 
-/* Bluetooth通信タスクの起動 */
-//act_tsk(BT_TASK);
-
 
 void main_task(intptr_t unused)
 {
@@ -75,7 +72,7 @@ void main_task(intptr_t unused)
 	while (1)
 	{
 		// 尻尾で立つ
-		tail_control(TAIL_ANGLE_STAND_UP);
+		tail_control(TAIL_ANGLE_STAND_UP, P_GAIN_FORWARD);
 
 		// タッチセンサーが押された場合スタート
 		if (ev3_touch_sensor_is_pressed(touch_sensor) == 1)
@@ -147,10 +144,7 @@ void main_task(intptr_t unused)
 		sensor = GetParam();
 
 		// 距離演算
-
-		/* 2で割らなくてよいのか？ちなみに、WHEEL_Rは半径ではなく、直径 */
 		distance = 0.5 * (sensor.right + sensor.left) / 360 * PI * WHEEL_R;
-
 
 		// モータの前回の値更新
 		motor_before[RIGHT_MOTOR] = sensor.right;
@@ -160,35 +154,20 @@ void main_task(intptr_t unused)
 		{
 		// PHASE2 通常走行
 		case PHASE2:
-			// 速度設定
-			//forward = 60;
-			//forward = Speed_adjust(forward, 100);
 			//尻尾を上にキープ
-			tail_control(-82);
+			tail_control(TAIL_ANGLE_DRIVE, P_GAIN_FORWARD);
 			// PID制御
 			turn = pid_reflection(sensor.color, calib_light);
-			//turn = 0;
 			if(turn >= 100){
 				turn = 100;
 			}else if(turn <= -100){
 				turn = -100;
 			}
 			forward = Speed_adjust(turn);
-			
-
-			//if(turn >= 10 || turn <= -10){
-			//	forward = Speed_adjust(forward, 0);
-			//}
 
 			//倒立振子API
 			EV3RT_Balancer(sensor, forward, turn, &pwm_L, &pwm_R);
-			// //走行
-			// if (abs(pwm_L-pwm_R) <= 5){
-			// 	ev3_motor_steer(left_motor, right_motor, 40, 0);				
-			// }else {
-				EV3RT_Running(pwm_L, pwm_R);
-			// }
-			
+			EV3RT_Running(pwm_L, pwm_R);
 
 			//データ送信
 			// ログ出力
@@ -198,68 +177,46 @@ void main_task(intptr_t unused)
 			sprintf(output_string, "%d\tcolor:%3d    forward:%4d   turn:%4d    pwm_L:%4d    pwm_R:%4d\n",count++ ,sensor.color, forward, turn, pwm_L, pwm_R);
 			fputs(output_string, bt);
 
+
+			/* 障害物検知 */
 			int d = sonar_alert();
-			if (d != 0) /* 障害物検知 */
+			if (d != 0) 
 			{
-				sprintf(output_string, "sensor_distance:%d\n",d);
-				fputs(output_string, bt);
+				ev3_speaker_play_tone(NOTE_C4,200);
 				TURN_STATE = PHASE21; /* 障害物を検知したら停止 */
 			}
-
-			//灰色検知
-			//if(gray_detection(sensor.color)){
-			//TURN_STATE = PHASE20;
-			//}
 
 			// 距離が2400越え(リンボー用)
 			if (distance > 2400)
 			{
 				ev3_speaker_play_tone(NOTE_D6, 1000);
-				//尻尾を上にキープ
-				//tail_control(TAIL_ANGLE_DRIVE_2, P_GAIN_FORWARD);
-				//スピードダウン
 				TURN_STATE = PHASE21;
 			}
 
-			//tslp_tsk(4);
 			break;
 
 		//障害検知した後
 		case PHASE21:
 
-			
-
-			// 尻尾走行に移行
-			//forward = 0;
-			//turn = pid_reflection(sensor.color, calib_light); //仮
-			//tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
 			tmp_distance = distance;
+			// 尻尾走行に移行
 			change_tailRunning_Mode();
-
-			//ev3_motor_steer(left_motor, right_motor, forward, 0);
-			
+			ev3_speaker_play_tone(NOTE_C4,200);
+			ev3_speaker_play_tone(NOTE_C4,200);
 			TURN_STATE = PHASE23;
+
+			//tslp_tsk(10);
 			break;
 
 		//尻尾走行移行後一定距離走る
 		case PHASE23:
 			//リンボー後の距離測定開始
-
 			limbo_distance1 = 0.5 * (sensor.right + sensor.left) / 360 * PI * WHEEL_R - tmp_distance;
 			if (limbo_distance1 < 50)
 			{
-				// ログ出力
-				sprintf(output_string, "pwm_L:%4d    pwm_R:%4d\n", pwm_L,pwm_R);
-				fputs(output_string, bt);
 				//尻尾固定
-				//tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
-				//走行速度
-				//forward = Speed_adjust(forward, 0);
-				// PID制御
-				//turn = pid_reflection(sensor.color, calib_light);
+				tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
 				//走行
-				//EV3RT_Balancer(sensor, 10, 0, &pwm_L, &pwm_R);
-				//EV3RT_Running(pwm_L, pwm_R);
 				ev3_motor_steer(left_motor, right_motor, 10, 0);
 			}
 			// 一定距離走ったら
@@ -267,44 +224,22 @@ void main_task(intptr_t unused)
 			{
 				//バック走行へ
 				tmp_distance = distance;
+				ev3_speaker_play_tone(NOTE_C4,200);
+				ev3_speaker_play_tone(NOTE_C4,200);
+				ev3_speaker_play_tone(NOTE_C4,200);
 				TURN_STATE = PHASE25;
-				tslp_tsk(10);	
+				//tslp_tsk(10);	
 			}
-			//tslp_tsk(10);		//4msごとに稼働
 			break;
-			//case PHASE80:
-			//ev3_speaker_play_tone(NOTE_D6,1000);
-			//tslp_tsk(3000);
-			//TURN_STATE = PHASE25;
-			//break;
-		// case PHASE24:
-		// 	// 尻尾走行に移行
-		// 	forward = 0;
-		// 	turn = pid_reflection(sensor.color, calib_light); //仮
-		// 	change_tailRunning_Mode();
-		// 	TURN_STATE = PHASE25;
-		// 	break;
 
 		case PHASE25:
 			//尻尾固定
 			//リンボー後の距離測定開始
-
 			limbo_distance2 = 0.5 * (sensor.right + sensor.left) / 360 * PI * WHEEL_R - tmp_distance;
 			if (limbo_distance2 > -50)
 			{
-				// ログ出力
-				sprintf(output_string, "pwm_L:%4d    pwm_R:%4d\n", pwm_L,pwm_R);
-				fputs(output_string, bt);
 				//尻尾固定
-				//tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
-				//走行速度
-				//forward = Speed_adjust(forward, 0);
-
-				// PID制御
-				//turn = pid_reflection(sensor.color, calib_light);
-				//走行
-				//EV3RT_Balancer(sensor, 10,0, &pwm_L, &pwm_R);
-				//EV3RT_Running(pwm_L, pwm_R);
+				tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
 				ev3_motor_steer(left_motor, right_motor, -10, 0);
 			}
 			// 一定距離走ったら
@@ -323,18 +258,9 @@ void main_task(intptr_t unused)
 			limbo_distance3 = 0.5 * (sensor.right + sensor.left) / 360 * PI * WHEEL_R - tmp_distance;
 			if (limbo_distance3 < 100)
 			{
-				// ログ出力
-				sprintf(output_string, "pwm_L:%4d    pwm_R:%4d\n", pwm_L,pwm_R);
-				fputs(output_string, bt);
+
 				//尻尾固定
-				//tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
-				//走行速度
-				//forward = Speed_adjust(forward, 0);
-				// PID制御
-				//turn = pid_reflection(sensor.color, calib_light);
-				//走行
-				//EV3RT_Balancer(sensor, 10, 0, &pwm_L, &pwm_R);
-				//EV3RT_Running(pwm_L, pwm_R);
+				tail_control(TILT_MOTOR_PARAM, P_GAIN_FORWARD);
 				ev3_motor_steer(left_motor, right_motor, 10, 0);
 			}
 			// 一定距離走ったら
@@ -349,9 +275,7 @@ void main_task(intptr_t unused)
 		// 停止処理
 		case PHASE99:
 			//尻尾固定
-			tail_control(TILT_MOTOR_PARAM);
-			// 速度を0へ
-			//forward = Speed_adjust(forward, 0);
+			tail_control(80, P_GAIN_STOP);
 			//走行
 			ev3_motor_steer(left_motor, right_motor, 0, 0);
 			//tslp_tsk(4);		//4msごとに稼働
@@ -367,8 +291,6 @@ void main_task(intptr_t unused)
 	/*停止通知*/
 	ev3_led_set_color(LED_RED);
 
-	/* ラベルを付けているが、ここにジャンプするgoto文は見つからない */
-exit_func: //非常停止
 	ter_tsk(BT_TASK);
 	/*bluetooth終了*/
 	fclose(bt);
@@ -389,11 +311,11 @@ void bt_task(intptr_t unused)
 		uint8_t c = fgetc(bt); /* 受信 */
 		switch (c)
 		{
-		case '0':
+		case '0':	//停止
 			ev3_speaker_play_tone(NOTE_CS6, 1000);
 			bt_cmd = 0;
 			break;
-		case '1':
+		case '1':	//スタート
 			ev3_speaker_play_tone(NOTE_CS6, 1000);
 			bt_cmd = 1;
 			break;

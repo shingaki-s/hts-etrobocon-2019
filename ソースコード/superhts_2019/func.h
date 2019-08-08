@@ -51,52 +51,22 @@ static const motor_port_t
 #define P_GAIN_FORWARD     2.5F /* 完全停止用モータ制御比例係数 */
 #define P_GAIN_STOP		   0.3F /* 停止時尻尾下げ速度 */
 #define PWM_ABS_MAX          60 /* 完全停止用モータ制御PWM絶対最大値 */
+
+
 /*PID制御用パラメタ*/
-
-//#define DELTA_T 0.004
 #define DELTA_T 0.004
-
-//#define KP 0.38
 #define KP 0.70
-//#define KP 0.64
-//#define KP 0.66
-//#define KP 0.72
-//#define KP 0.705
-//#define KP 0.40
-//#define KP 0.50
-
-//#define KI 0.002
-//#define KI 0.003
-//#define KI 0.0022
-//#define KI 0.05
-//#define KI 0.0015
 #define KI 0.002
-//#define KI 1.2
-//#define KI 0.03
-//#define KI 0
-
-
-//#define KD 0.09
-//#define KD 0.15
-//#define KD 0.20
-//#define KD 0.05
-//#define KD 0.10
-//#define KD 0.12
-//#define KD 0.11
 #define KD 0.09
-//#define KD 0.085
-//#define KD 0.10
-//#define KD 0.03
-//#define KD 0
 
-/* KDはKP,KIとは異符号にしなければならないのでは？ */
+
 /*TILT_PID制御用パラメタ*/
 #define TILT_KP 4.20
 /*尻尾を用いた3点でたつときのパラメタ*/
-#define STOP_TAIL_ANGLE 71 /*尻尾を着地させるためのパラメタ68*/
-#define STOP_MOTOR_PARAM 20 /*ちょっとだけ進むためのパラメタ*/
+#define STOP_TAIL_ANGLE 80 /*尻尾を着地させるためのパラメタ68*/
+#define STOP_MOTOR_PARAM 10 /*ちょっとだけ進むためのパラメタ*/
 #define TAIL MOTOR PARAM 10 /*仮決め定数、リンボー後のスピード*/
-#define TILT_MOTOR_PARAM 80 /*斜め状態になるためのパラメタ*/
+#define TILT_MOTOR_PARAM 71 /*斜め状態になるためのパラメタ*/
 /*自己位置推定用パラメタ*/
 #define WHEEL_R 10
 
@@ -166,7 +136,7 @@ EV3RT_sensor_param 	GetParam(void);
 void 				EV3RT_Running(signed char pwm_L, signed char pwm_R);
 int 				pid_reflection(int sensor_val, int target_val);
 int 				tilt_pid_reflection(int sensor_val, int target_val);
-void 				tail_control(int angle);	
+void 				tail_control(signed int angle, float tail_speed);	
 void 				EV3RT_Balancer(EV3RT_sensor_param sensor, int forward, int turn,signed char *pwm_L, signed char *pwm_R);
 int 				sonar_alert(void);
 int 				light_reflection_calibration(void);
@@ -178,4 +148,4 @@ bool 				stair_up_detect(int gyro);
 int 				Speed_adjust(int turn);
 bool 				gray_detection(int now_color);
 
-#endif //_FUNC_H_
+#endif 

@@ -25,7 +25,7 @@ void 				First_setup(void);
 EV3RT_sensor_param 	GetParam(void);
 void 				EV3RT_Running(signed char pwm_L, signed char pwm_R);
 int 				pid_reflection(int sensor_val, int target_val);
-void 				tail_control(int target_angle);
+void 				tail_control(signed int angle, float tail_speed);
 void 				EV3RT_Balancer(EV3RT_sensor_param sensor, int forward, int turn,signed char *pwm_L, signed char *pwm_R);
 int 				sonar_alert(void);
 int 				light_reflection_calibration(void);
@@ -93,40 +93,6 @@ void EV3RT_Running(signed char pwm_L, signed char pwm_R){
  *	概要		:	反射光を基にしたPID制御 
  *----------------------------------------------------------------------------*/
 int pid_reflection(int sensor_val, int target_val){
-    /* 追加 */
-	//int p,i,d;
-    //  float p, i, d;
-
-	// reflection_diff[0] = reflection_diff[1];
-	// reflection_diff[1] = sensor_val - target_val;
-
-    // total += (reflection_diff[0] + reflection_diff[1])/2.0 *DELTA_T;
-
-	// p = KP * reflection_diff[1];
-    // /* 積分になっていない */
-	// /* i = KI * (reflection_diff[0] + reflection_diff[1]) * DELTA_T / 2; */
-    // i = KI * total ;
-
-	// d =  KD * (reflection_diff[1] - reflection_diff[0]) / DELTA_T;
-
-	// return (int)(p+i+d);
-
-	// float p, i, d;
-
-	// reflection_diff[0] = reflection_diff[1];
-	// reflection_diff[1] = sensor_val - target_val;
-
-	// total += reflection_diff[1] * DELTA_T;
-
-	// p = KP * (reflection_diff[1]);
-
-    // i = KI * total;
-
-	// d = KD * (reflection_diff[1] - reflection_diff[0]) / DELTA_T;
-
-	//total =  p + i + d;
-
-	//return (int)(p + i + d);
 
 	float p, i, d;
 	float diff;
@@ -153,37 +119,22 @@ int pid_reflection(int sensor_val, int target_val){
 // 返り値 : 無し
 // 概要 : 走行体完全停止用モータの角度制御
 //*****************************************************************************
-// void tail_control(signed int angle, float tail_speed){
+void tail_control(signed int angle, float tail_speed){
 
-// 	float pwm = (float)(angle - ev3_motor_get_counts(tail_motor)) * tail_speed;/* 比例制御 */
-// 	if (pwm > PWM_ABS_MAX){
-// 		pwm = PWM_ABS_MAX;
-// 	}else if (pwm < -PWM_ABS_MAX){
-// 		pwm = -PWM_ABS_MAX;
-// 	}
+	float pwm = (float)(angle - ev3_motor_get_counts(tail_motor)) * tail_speed;/* 比例制御 */
+	if (pwm > PWM_ABS_MAX){
+		pwm = PWM_ABS_MAX;
+	}else if (pwm < -PWM_ABS_MAX){
+		pwm = -PWM_ABS_MAX;
+	}
 
-// 	if (pwm == 0){
-// 		ev3_motor_stop(tail_motor, true);
-// 	}else{
-// 		ev3_motor_set_power(tail_motor, (signed char)pwm);
-// 	}
-// }
-
-void tail_control(int target_angle){
-
-	ev3_motor_reset_counts(tail_motor);
-
-	int count_angle = 0;
-	while(1){
-		ev3_motor_set_power(tail_motor, 10);
-		count_angle = ev3_motor_get_counts(tail_motor);
-		if(count_angle >= target_angle){
-			ev3_motor_stop(tail_motor, true);
-			break;
-		}
-		tslp_tsk(4);
+	if (pwm == 0){
+		ev3_motor_stop(tail_motor, true);
+	}else{
+		ev3_motor_set_power(tail_motor, (signed char)pwm);
 	}
 }
+
 
 
 

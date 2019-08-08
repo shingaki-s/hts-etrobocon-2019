@@ -47,7 +47,7 @@ void change_tailRunning_Mode(){
 			//センサ値取得
 			sensor = GetParam();
 			//尻尾を下げる (80度までゆっくり)
-			tail_control(STOP_TAIL_ANGLE);
+			tail_control(TILT_MOTOR_PARAM,P_GAIN_STOP);
 			//バランスもとる
 			EV3RT_Balancer(sensor,forward,turn,&pwm_L,&pwm_R);
 			EV3RT_Running(pwm_L,pwm_R);
@@ -56,44 +56,44 @@ void change_tailRunning_Mode(){
 			timer += 1;
 
 			// 1s経ったら
-			if(timer > 10){
+			if(timer > 200){
 				//次のフェーズへ
 				phase = 1;
 				timer = 0;
-				//ev3_speaker_play_tone(NOTE_G4,500);
+				ev3_speaker_play_tone(NOTE_G4,500);
 			}
 			break;
 
 		case 1: // phase1 少し前に進む
 			//少し前へ
-			forward = STOP_MOTOR_PARAM;
+			forward = 10;
 			//センサ値取得
 			sensor = GetParam();
-			//尻尾を下げる (80度でキープ)
-			tail_control(STOP_TAIL_ANGLE);
+			//尻尾を下げる (71度でキープ)
+			tail_control(TILT_MOTOR_PARAM,P_GAIN_FORWARD);
 			//バランスもとる
 			EV3RT_Balancer(sensor,forward,turn,&pwm_L,&pwm_R);
 			//ちょっとだけ進む
-			EV3RT_Running(pwm_L,pwm_R);
+			EV3RT_Running(forward,forward);
 
 			//カウントアップ
 			timer += 1;
 
 			// 0.1s経ったら
-			if(timer > 25){
+			if(timer > 750){
 				//次のフェーズへ
 				phase = 2;
 				timer = 0;
-				//ev3_speaker_play_tone(NOTE_C5,500);
+				ev3_speaker_play_tone(NOTE_C5,500);
 			}
 			break;
 
 		case 2: // phase2 バランスとることを放棄して尻尾に体重を乗せる
 			//まだ少し前に進む + 尻尾でバランスとるのでセンサ値は要らない
-			pwm_R = forward;
-			pwm_L = forward;
-			//尻尾を下げる (80度でキープ)
-			tail_control(STOP_TAIL_ANGLE);
+			pwm_R = 0;
+			pwm_L = 0;
+			//尻尾を下げる (71度でキープ)
+			tail_control(TILT_MOTOR_PARAM,P_GAIN_FORWARD);
 			//ちょっとだけ進む
 			EV3RT_Running(pwm_L,pwm_R);
 
@@ -101,23 +101,24 @@ void change_tailRunning_Mode(){
 			timer += 1;
 
 			// 0.3s経ったら
-			if(timer > 25 * 3){
+			if(timer > 50){
 				//次のフェーズへ
-				phase = 3;
+				phase = 99;
 				timer = 0;
-				//ev3_speaker_play_tone(NOTE_G5,500);
+				ev3_speaker_play_tone(NOTE_G5,500);
 			}
 			break;
 
 		case 3: //phase3 尻尾の角度を最大に取る。
-			tail_control(TILT_MOTOR_PARAM);
+			tail_control(TILT_MOTOR_PARAM,P_GAIN_STOP);
 			timer += 1;
 
 			// 2秒たったら
-			if(timer >= 500){
+			if(timer >= 250){
 				phase = 99;
 				timer = 0;
 			}
+			break;
 
 
 		case 99: //終了処理
@@ -126,7 +127,8 @@ void change_tailRunning_Mode(){
 			pwm_L = 0;
 			//とまる
 			EV3RT_Running(pwm_L,pwm_R);
-			//ev3_speaker_play_tone(NOTE_C6,500);
+			ev3_speaker_play_tone(NOTE_C6,500);
+			ev3_speaker_play_tone(NOTE_C6,500);
 
 			//ループを抜ける
 			loop_flg = 0;

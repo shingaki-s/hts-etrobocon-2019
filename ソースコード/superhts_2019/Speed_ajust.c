@@ -4,15 +4,15 @@
 #endif
 
 int Speed_adjust(int turn){
-	float turn1 = abs(turn);
+	int turn1 = abs(turn);
 	//対策２
 	float a = (0-50)/225;
 	if (turn1 >= 40){
 		return 0;
 	}else if (turn1 > 15 && turn1 < 40 ){
-		return 0.08*turn1*turn1-6.4*turn1+128;
+		return (int)(0.08*turn1*turn1-6.4*turn1)+128;
 	}else if (turn1 >= 0 && turn1 <= 15){
-		return a*turn1*turn1+100;
+		return (int)(a*turn1*turn1)+100;
 	}
 	
 	//対策１
